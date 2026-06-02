@@ -49,7 +49,13 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 - Deliver relevant search results
 - Provide useful filters for users (location, company, tags, work mode)
 
-### 1.2 Objectives
+### 1.2 Out of Scope
+
+- Individual scraper testing (each scraper is handled separately by the scraping teams)
+- Validator (admin.peviitor.ro) — will be covered in a separate test strategy document
+- Mobile application testing (androidAPP) — will be covered in a separate test strategy for mobile testing
+
+### 1.3 General Objectives
 
 - Ensure the quality of aggregated data (jobs, companies)
 - Validate search engine functionality (SOLR)
@@ -57,49 +63,28 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 - Verify the user experience in the web interface (search-engine)
 - Identify defects early through manual and automated testing
 - Ensure availability and performance on the existing infrastructure (Raspberry Pi 5, CloudFlare)
+- Handle errors gracefully — clear messages for no results, invalid input, unavailable external links
+- Validate input handling — long input (>500 chars), special characters, empty search, case sensitivity
+- Verify correct integration with external links (LinkedIn, GitHub, Discord, etc.)
 
-### 1.3 Components in Scope
+### 1.4 Quality Benefits Targeted
 
-| Component | Technology | Role |
-|-----------|-----------|------|
-| Frontend (search-engine) | React 18, Redux Toolkit, Vite, Tailwind CSS | User interface for searching and displaying jobs |
-| API (api.peviitor.ro) | PHP (v0-v6) | REST API wrapper over SOLR, search and filter endpoints |
-| Core (peviitor_core) | PHP, Shell, Docker | SOLR indexing, data validation, workflows (scraped → verified → published) |
-| Apache SOLR | SOLR (Raspberry Pi 5) | Full-text search engine, jobs/companies schemas, Romanian diacritics support |
-| Validator (admin.peviitor.ro) | JavaScript, Docker | Manual job validation |
-| Scrapers | Python, JavaScript, Scrapy, JMeter | Automated job collection from 700+ companies |
-
-> **Note**: Mobile application testing (androidAPP) is **not** covered in this document. A separate test strategy will be created for mobile testing.
-
-### 1.4 Out of Scope
-
-- Individual scraper testing (each scraper is handled separately by the scraping teams)
-
-### 1.5 Quality Benefits Targeted
-
+- **Functionality**: All features work as specified
 - **Performance**: Response times < 2s for searches, daily indexing
+- **Security**: OWASP Top 10 compliance, input sanitization, API endpoint security
 - **Reliability**: Correct data, no dead links, expired jobs automatically removed
+- **Resilience**: Platform remains operational under stress (API down, SOLR offline)
 - **Disaster Recovery**: SOLR index backup and restoration
+- **Redundancy**: Failover mechanisms for critical components
 - **Scalability**: Ability to aggregate 40,000+ jobs updated daily
 - **Validity**: Compliance with the data schema (Job Model, Company Model)
+- **Accessibility**: WCAG 2.2 Level AA compliance
+- **Usability**: Intuitive search flow, clear filters, helpful error messages, mobile-friendly experience
+- **Browser Compatibility**: Latest 2 versions of Chrome, Firefox, Edge, Safari
+- **Mobile Responsiveness**: All pages functional on viewports ≥ 320px
+- **SEO**: Valid meta tags, semantic HTML, proper heading hierarchy (h1-h6)
 
-### 1.6 GitHub Repositories
-
-| Component | Repository | URL |
-|-----------|-----------|-----|
-| Frontend | search-engine | [github.com/peviitor-ro/search-engine](https://github.com/peviitor-ro/search-engine) |
-| API | api.peviitor.ro | [github.com/peviitor-ro/api.peviitor.ro](https://github.com/peviitor-ro/api.peviitor.ro) |
-| Core (indexing, schemas, workflows) | peviitor_core | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) |
-| Validator | admin.peviitor.ro | [github.com/peviitor-ro/admin.peviitor.ro](https://github.com/peviitor-ro/admin.peviitor.ro) |
-| Mobile app (separate strategy) | androidAPP | [github.com/peviitor-ro/androidAPP](https://github.com/peviitor-ro/androidAPP) |
-| Scrapers frontend | frontend | [github.com/peviitor-ro/frontend](https://github.com/peviitor-ro/frontend) |
-| Scrapers scraping | scraping | [github.com/peviitor-ro/scraping](https://github.com/peviitor-ro/scraping) |
-| Local dev environment | local_environment | [github.com/peviitor-ro/local_environment](https://github.com/peviitor-ro/local_environment) |
-| Landing page | landing-page | [github.com/peviitor-ro/landing-page](https://github.com/peviitor-ro/landing-page) |
-| Documentation | documentation | [github.com/peviitor-ro/documentation](https://github.com/peviitor-ro/documentation) |
-| DevOps / hosting | devops | [github.com/peviitor-ro/devops](https://github.com/peviitor-ro/devops) |
-
-> **Note**: This strategy covers the components in **scope** from 1.3. Repositories listed here for scrapers, mobile app, landing page, documentation, and devops are kept for reference but their individual testing is outside this document's scope.
+## 2. TESTING APPROACH
 
 ### 2.1 Frontend Testing (search-engine)
 
@@ -650,3 +635,20 @@ Environment: test.peviitor.ro
    QA Lead: __________________
    Date: ___/___/2026
 ```
+
+---
+## Appendix A — GitHub Repositories
+
+| Component | Repository | URL |
+|-----------|-----------|-----|
+| Frontend | search-engine | [github.com/peviitor-ro/search-engine](https://github.com/peviitor-ro/search-engine) |
+| API | api.peviitor.ro | [github.com/peviitor-ro/api.peviitor.ro](https://github.com/peviitor-ro/api.peviitor.ro) |
+| Core (indexing, schemas, workflows) | peviitor_core | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) |
+| Validator | admin.peviitor.ro | [github.com/peviitor-ro/admin.peviitor.ro](https://github.com/peviitor-ro/admin.peviitor.ro) |
+| Mobile app (separate strategy) | androidAPP | [github.com/peviitor-ro/androidAPP](https://github.com/peviitor-ro/androidAPP) |
+| Scrapers frontend | frontend | [github.com/peviitor-ro/frontend](https://github.com/peviitor-ro/frontend) |
+| Scrapers scraping | scraping | [github.com/peviitor-ro/scraping](https://github.com/peviitor-ro/scraping) |
+| Local dev environment | local_environment | [github.com/peviitor-ro/local_environment](https://github.com/peviitor-ro/local_environment) |
+| Landing page | landing-page | [github.com/peviitor-ro/landing-page](https://github.com/peviitor-ro/landing-page) |
+| Documentation | documentation | [github.com/peviitor-ro/documentation](https://github.com/peviitor-ro/documentation) |
+| DevOps / hosting | devops | [github.com/peviitor-ro/devops](https://github.com/peviitor-ro/devops) |

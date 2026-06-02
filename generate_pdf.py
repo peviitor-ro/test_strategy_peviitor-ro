@@ -1,6 +1,7 @@
 from pathlib import Path
 from markdown import markdown
 from playwright.sync_api import sync_playwright
+import re
 
 md_path = Path(__file__).parent / "Test_Strategy_Peviitor.ro.md"
 pdf_path = Path(__file__).parent / f"Test_Strategy_Peviitor.ro_v{{}}.pdf"
@@ -34,9 +35,8 @@ with sync_playwright() as p:
     pg = b.new_page()
     pg.set_content(html, wait_until="networkidle")
     # determine next version from existing PDFs
-    existing = sorted(p.parent.glob("Test_Strategy_Peviitor.ro_v*.pdf"))
+    existing = sorted(md_path.parent.glob("Test_Strategy_Peviitor.ro_v*.pdf"), key=lambda p: int(re.search(r'_v(\d+)\.pdf$', p.name).group(1)))
     if existing:
-        import re
         m = re.search(r'_v(\d+)\.pdf$', existing[-1].name)
         ver = int(m.group(1)) + 1 if m else 1
     else:
