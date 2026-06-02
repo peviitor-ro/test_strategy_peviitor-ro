@@ -82,7 +82,7 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 - **Usability**: Intuitive search flow, clear filters, helpful error messages, mobile-friendly experience
 - **Browser Compatibility**: Latest 2 versions of Chrome, Firefox, Edge, Safari
 - **Mobile Responsiveness**: All pages functional on viewports ≥ 320px
-- **SEO**: Valid meta tags, semantic HTML, proper heading hierarchy (h1-h6)
+- **SEO**: Valid meta tags, semantic HTML, proper heading hierarchy (h1-h6), Open Graph tags required
 
 ## 2. TESTING APPROACH
 
