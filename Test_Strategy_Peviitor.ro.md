@@ -21,7 +21,33 @@
 
 ### 1.1 Purpose of the Document
 
-This document defines the test strategy for the **peviitor.ro** platform — the open source job search engine for Romania. Its purpose is to establish a unified testing approach covering all major platform components, from front-end to the indexing infrastructure.
+This document defines the test strategy for the **peviitor.ro** platform — the open source job search engine for Romania. A core strategic principle is that the platform is built exclusively with **open source and free technologies**, and this commitment is not subject to change. Its purpose is to establish a unified testing approach covering all major platform components, from front-end to the indexing infrastructure, with the following scope objectives for each area:
+
+**Apache SOLR**
+- Upgrade to the latest stable version
+- Maintain two dedicated cores: `job` and `company`
+- Ensure the SOLR schema matches the Job and Company models defined in peviitor_core
+- Guarantee data consistency — no orphaned fields, no missing mandatory fields from the job or company model
+- Implement Basic Authentication as a security layer
+
+**PHP API (api.peviitor.ro)**
+- Maintain two versions: **v0** for development and testing, **v1** for production
+- Keep the codebase simple, fast, and easy to maintain
+- Ensure the code is easily deployable
+- Ensure the code is testable
+- Eliminate security vulnerabilities
+- Secure all API endpoints
+
+**UI (search-engine)**
+- Keep the UI simple to write and maintain
+- Ensure the UI conforms to the UX Design (Figma)
+- Host the UI on GitHub Pages
+- Ensure the UI remains accessible even if the BFF PHP API is down (graceful degradation)
+
+**Search Functionality**
+- Make the search interface easy to use
+- Deliver relevant search results
+- Provide useful filters for users (location, company, tags, work mode)
 
 ### 1.2 Objectives
 
