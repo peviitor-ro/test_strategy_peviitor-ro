@@ -2,12 +2,15 @@ from pathlib import Path
 from markdown import markdown
 from playwright.sync_api import sync_playwright
 import re
+from io import BytesIO
+from pypdf import PdfReader, PdfWriter
+from reportlab.pdfgen import canvas
 
 md_path = Path(__file__).parent / "Test_Strategy_Peviitor.ro.md"
 pdf_path = Path(__file__).parent / f"Test_Strategy_Peviitor.ro_v{{}}.pdf"
 
 tpl = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>'
-tpl += '@page{margin:18mm 20mm;size:A4}'
+tpl += '@page{margin:18mm 20mm 22mm 20mm;size:A4}'
 tpl += '*{box-sizing:border-box}'
 tpl += 'body{font-family:Segoe UI,Calibri,Arial,sans-serif;font-size:10.5pt;line-height:1.45;color:#1a1a1a;margin:0;padding:0}'
 tpl += 'h1{font-size:16pt;color:#1a1a1a;margin-top:0}'
@@ -34,7 +37,6 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     pg = b.new_page()
     pg.set_content(html, wait_until="networkidle")
-    # determine next version from existing PDFs
     existing = sorted(md_path.parent.glob("Test_Strategy_Peviitor.ro_v*.pdf"), key=lambda p: int(re.search(r'_v(\d+)\.pdf$', p.name).group(1)))
     if existing:
         m = re.search(r'_v(\d+)\.pdf$', existing[-1].name)
@@ -44,5 +46,27 @@ with sync_playwright() as p:
     out = Path(str(pdf_path).format(ver))
     pg.pdf(path=str(out), format="A4", print_background=True)
     b.close()
+
+# Add footer with page numbers via reportlab watermark
+reader = PdfReader(str(out))
+writer = PdfWriter()
+total = len(reader.pages)
+pw, ph = 595.27, 841.89  # A4 in points
+
+for i, page in enumerate(reader.pages):
+    packet = BytesIO()
+    c = canvas.Canvas(packet, pagesize=(pw, ph))
+    c.setFont("Helvetica", 8)
+    c.setFillColorRGB(0.6, 0.6, 0.6)
+    c.drawCentredString(pw / 2, 17, f"peviitor.ro test strategy")
+    c.drawRightString(pw - 36, 17, f"pag {i+1} / {total}")
+    c.save()
+    packet.seek(0)
+    watermark = PdfReader(packet)
+    page.merge_page(watermark.pages[0])
+    writer.add_page(page)
+
+with open(str(out), "wb") as f:
+    writer.write(f)
 
 print(f"PDF generat: {out.name}")

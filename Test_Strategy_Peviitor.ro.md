@@ -1,9 +1,9 @@
 # Test Strategy — peviitor.ro
 
-> **Project**: peviitor.ro — open source job search engine for Romania
-> **Author**: Boga Sebastian-Nicolae
+> **Project**: peviitor.ro — Locul de muncă visat, la un click distanță
+> **Author**: Diana Dragoi
 > **Date**: June 2026
-> **Version**: 16.0
+> **Version**: 1.0
 
 ### Document Approval
 
@@ -816,11 +816,12 @@ All bugs are tracked in **GitHub Issues** under the relevant repository (search-
 
 - **Title**: Clear, descriptive summary of the issue
 - **Environment**: test.peviitor.ro / peviitor.ro / local
+  - **Browser / Device**: Chrome, Firefox, Edge, Safari + version
+  - **OS**: Windows, macOS, Linux, Android, iOS
 - **Steps to Reproduce**: Numbered steps to recreate the bug
-- **Actual Result**: What actually happens
 - **Expected Result**: What should happen
+- **Actual Result**: What actually happens
 - **Screenshots / Video**: Visual evidence (if applicable)
-- **Browser / Device**: Chrome, Firefox, Edge, Safari + version
 - **Severity**: See 10.5
 
 ### 10.2 Defect Triage
@@ -920,6 +921,8 @@ Following this strategy, we aim to deliver a reliable, fast, and user-friendly j
 **Title**: [Short descriptive summary]
 
 **Environment**: test.peviitor.ro | peviitor.ro | local
+    - **Browser**: Chrome 125
+    - **OS**: Windows 11
 
 **Steps to Reproduce**:
 1. Go to https://test.peviitor.ro
@@ -927,14 +930,11 @@ Following this strategy, we aim to deliver a reliable, fast, and user-friendly j
 3. Click "Load More" 3 times
 4. Observe results
 
-**Actual Result**: Only 10 results shown after clicking "Load More" 3 times; console shows 404 error.
-
 **Expected Result**: 30 results should be displayed (10 per page × 3 pages).
 
-**Severity**: S2 - Critical
+**Actual Result**: Only 10 results shown after clicking "Load More" 3 times; console shows 404 error.
 
-**Browser**: Chrome 125
-**OS**: Windows 11
+**Severity**: S2 - Critical
 
 **Screenshots**: [link or attachment]
 
@@ -1028,3 +1028,46 @@ Environment: test.peviitor.ro
 | Landing page | landing-page | [github.com/peviitor-ro/landing-page](https://github.com/peviitor-ro/landing-page) |
 | Documentation | documentation | [github.com/peviitor-ro/documentation](https://github.com/peviitor-ro/documentation) |
 | DevOps / hosting | devops | [github.com/peviitor-ro/devops](https://github.com/peviitor-ro/devops) |
+
+---
+## Appendix C — Data Models
+### C.1 Job Model
+
+| Field | Type | Required | Description & Rules |
+|-------|------|----------|---------------------|
+| `url` | string | Yes | Full URL to the job detail page. Must be unique, valid HTTP/HTTPS, canonical job detail page |
+| `title` | string | Yes | Exact position title. Max 200 chars, no HTML, trimmed whitespace, diacritics accepted (ăâîșț) |
+| `company` | string | No | Legal name of the hiring company. Must match Company.name (case insensitive, diacritics accepted) |
+| `cif` | string | No | CIF/CUI of the company |
+| `location` | string[] | No | Romanian cities/addresses. Diacritics accepted. Multi-valued array |
+| `tags` | string[] | No | Skills/education/experience. Lowercase, max 20 entries, no diacritics |
+| `workmode` | string | No | One of: "remote", "on-site", "hybrid" |
+| `date` | date | No | Scrape/index date (ISO8601 UTC) |
+| `status` | string | No | One of: "scraped", "tested", "published", "verified" |
+| `vdate` | date | No | Verified date (ISO8601). Set only when validation is "verified" |
+| `expirationdate` | date | No | Estimated expiration date = vdate + 30 days max |
+| `salary` | string | No | Salary interval + currency (e.g. "5000-8000 RON"). Must be a string |
+
+**Job Status Flow**: `scraped` → (`tested` OR `verified`) → `published`
+
+### C.2 Company Model
+
+| Field | Type | Required | Description & Rules |
+|-------|------|----------|---------------------|
+| `id` | string | Yes | CIF/CUI (e.g. "12345678"). 8 digits, no RO prefix |
+| `company` | string | Yes | Legal name from Trade Register. Uppercase, diacritics required |
+| `brand` | string | No | Commercial brand name (e.g. "ORANGE", "EPAM") |
+| `group` | string | No | Parent company group |
+| `status` | string | No | One of: "activ", "suspendat", "inactiv", "radiat" |
+| `location` | string[] | No | Romanian cities/addresses. Diacritics accepted. Multi-valued |
+| `website` | string[] | No | Official company website(s). Valid HTTP/HTTPS URLs. Multi-valued |
+| `career` | string[] | No | Company career page(s). Valid HTTP/HTTPS URLs. Multi-valued |
+| `lastScraped` | string | No | Date of last scrape (ISO8601) |
+| `scraperFile` | string | No | Name of the scraper file used |
+
+## Appendix D — Domain & Infrastructure Configuration
+
+| Item | Configuration |
+|------|--------------|
+| Cloudflare account email | `sebitestb@gmail.com` |
+| DNS records | All DNS records are managed in Cloudflare |
