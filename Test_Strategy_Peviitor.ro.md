@@ -3,7 +3,7 @@
 > **Project**: peviitor.ro — open source job search engine for Romania
 > **Author**: Boga Sebastian-Nicolae
 > **Date**: June 2026
-> **Version**: 15.0
+> **Version**: 16.0
 
 ### Document Approval
 
@@ -22,6 +22,8 @@
 ### 1.1 Purpose of the Document
 
 This document defines the test strategy for the **peviitor.ro** platform — the open source job search engine for Romania. A core strategic principle is that the platform is built exclusively with **open source and free technologies**, and this commitment is not subject to change. Its purpose is to establish a unified testing approach covering all major platform components, from front-end to the indexing infrastructure, with the following scope objectives for each area:
+
+> **⚠️ Always keep in mind**: The primary mission of peviitor.ro is to provide users with a **comprehensive, up-to-date aggregated database of all jobs in Romania**. Every test, decision, and validation should serve this goal — ensuring job seekers can find relevant opportunities quickly and reliably.
 
 **Apache SOLR**
 - Upgrade to the latest stable version
@@ -54,6 +56,8 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 - Individual scraper testing (each scraper is handled separately by the scraping teams)
 - Validator (admin.peviitor.ro) — will be covered in a separate test strategy document
 - Mobile application testing (androidAPP) — will be covered in a separate test strategy for mobile testing
+- [orase.peviitor.ro](https://orase.peviitor.ro) — will be covered in a separate test strategy document
+- [firme.zira.ro](https://firme.zira.ro) and [admin.zira.ro](https://admin.zira.ro) — will be covered in a separate test strategy document
 
 ### 1.3 General Objectives
 
@@ -62,7 +66,7 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 - Confirm the correctness of the REST API (api.peviitor.ro)
 - Verify the user experience in the web interface (search-engine)
 - Identify defects early through manual and automated testing
-- Ensure availability and performance on the existing infrastructure (Raspberry Pi 5, CloudFlare)
+- Ensure availability and performance on the existing infrastructure (Raspberry Pi 5 + Pi 4, Apache, NginX Proxy Manager, CloudFlare)
 - Handle errors gracefully — clear messages for no results, invalid input, unavailable external links
 - Validate input handling — long input (>500 chars), special characters, empty search, case sensitivity
 - Verify correct integration with external links (LinkedIn, GitHub, Discord, etc.)
@@ -86,27 +90,294 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 
 ## 2. TESTING APPROACH
 
-### 2.1 Frontend Testing (search-engine)
+### 2.1 REQUIREMENTS
+
+This section describes where testers can find the **functional requirements** for each component. Every component (UI, API, SOLR, scrapers, etc.) has its own dedicated GitHub repository — see [Appendix B](#appendix-b--github-repositories) for the full list.
+
+The **[Software Architecture Design (SAD)](https://sad.peviitor.ro)** document at [sad.peviitor.ro](https://sad.peviitor.ro) is the primary reference for testing — it captures the architecture, component interactions, technology decisions, and the expected behavior of the entire platform. The **[Infrastructure Design Document (IDD)](https://idd.peviitor.ro)** at [idd.peviitor.ro](https://idd.peviitor.ro) covers the infrastructure topology, server configuration, networking, and deployment architecture. Testers should consult SAD and IDD as the authoritative sources when writing and validating test cases.
+
+**Apache SOLR**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **peviitor_core README** | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) | SOLR schema, field rules, indexing workflows, status flow |
+| **Documentation** | [sad.peviitor.ro](https://sad.peviitor.ro) — Software Architecture Design | SOLR architecture, core configuration, technology stack |
+| **GitHub Issues** | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) | SOLR-related feature requests, bug reports, schema change discussions |
+
+**PHP API (api.peviitor.ro)**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **Swagger UI** | [test.peviitor.ro/swagger-ui](https://test.peviitor.ro/swagger-ui) | API contract: endpoints, request/response schemas, status codes |
+| **Documentation** | [sad.peviitor.ro](https://sad.peviitor.ro) — Software Architecture Design | API architecture, component interactions, versioning strategy |
+| **GitHub Issues** | [github.com/peviitor-ro/api.peviitor.ro](https://github.com/peviitor-ro/api.peviitor.ro) | API feature requests, bug reports, endpoint discussions |
+
+**UI (search-engine)**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **Figma Designs** | [Figma - Pe Viitor](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) | UI mockups, design system, component specs, user flows |
+| **GitHub Issues** | [github.com/peviitor-ro/search-engine](https://github.com/peviitor-ro/search-engine) | Feature requests, bug reports, acceptance criteria |
+| **GitHub Releases** | [github.com/peviitor-ro/search-engine/releases](https://github.com/peviitor-ro/search-engine/releases) | Release notes with changelog, new features, fixed bugs |
+
+**Search Functionality**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **Figma Designs** | [Figma - Pe Viitor](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) | Search UI mockups, filter designs, user flow |
+| **peviitor_core README** | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) | Search fields, facet configuration, relevance settings |
+| **Documentation** | [sad.peviitor.ro](https://sad.peviitor.ro) — Software Architecture Design | Search architecture, SOLR query flow, indexing pipeline |
+| **GitHub Issues** | [github.com/peviitor-ro/search-engine](https://github.com/peviitor-ro/search-engine) | Search-related feature requests, bug reports, acceptance criteria |
+
+**General**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **Discord** | [discord.gg/KPMkdUfQNu](https://discord.gg/KPMkdUfQNu) | Real-time discussions, clarifications, decisions, meeting notes |
+| **Onboarding Portal** | [onboarding.peviitor.ro](https://onboarding.peviitor.ro) | General project overview, contributor guide, how-to guides |
+| **ROADMAP (tracking & planning)** | [github.com/orgs/peviitor-ro/projects/78](https://github.com/orgs/peviitor-ro/projects/78) | Task tracking, sprint planning, environment readiness, deploy status, team activity — the single source of truth for what is being worked on across all components |
+
+> **Rule**: When a requirement is unclear or missing, the tester **must** ask for clarification in Discord or via a GitHub Issue before writing test cases. Never guess the expected behavior. For functional requirements, contact the **Product Owner**; for process or priority clarifications, contact the **Project Manager**. When in doubt, start with a GitHub Issue tagged `question`.
+
+### 2.2 Non-Functional REQUIREMENTS
+
+This section describes where testers can find the **non-functional requirements** for each category. As with functional requirements, the **[Software Architecture Design (SAD)](https://sad.peviitor.ro)** at [sad.peviitor.ro](https://sad.peviitor.ro) and the **[Infrastructure Design Document (IDD)](https://idd.peviitor.ro)** at [idd.peviitor.ro](https://idd.peviitor.ro) are the primary references — SAD defines performance targets, security architecture, and other software-level concerns; IDD covers infrastructure specs, network topology, server configuration, and disaster recovery.
+
+**Performance**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **Documentation** | [sad.peviitor.ro](https://sad.peviitor.ro) — Software Architecture Design | Infrastructure specs (Raspberry Pi 5 / Pi 4), capacity, response time targets |
+| **GitHub Issues** | [github.com/peviitor-ro](https://github.com/peviitor-ro) per repo | Performance-related bug reports, load concerns, optimization requests |
+
+**Security**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **OWASP Top 10** | [owasp.org/www-project-top-ten](https://owasp.org/www-project-top-ten/) | Industry-standard web application security risks |
+| **GitHub Security Tab** | [github.com/peviitor-ro](https://github.com/peviitor-ro) — Security tab per repo | Secret Scanning alerts, Code Scanning (CodeQL) results, Dependabot vulnerability alerts |
+| **Documentation** | [sad.peviitor.ro](https://sad.peviitor.ro) — Software Architecture Design | Authentication setup, CORS configuration, security architecture |
+| **peviitor_core** | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) | SOLR basic auth scripts, security-related shell scripts |
+
+**Accessibility**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **WCAG 2.2** | [w3.org/TR/WCAG22](https://www.w3.org/TR/WCAG22/) | W3C accessibility standard — Level AA compliance criteria |
+| **Figma Designs** | [Figma - Pe Viitor](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) | Color contrast specs, component accessibility, focus states |
+| **GitHub Issues** | [github.com/peviitor-ro/search-engine](https://github.com/peviitor-ro/search-engine) | Accessibility-related bug reports, screen reader issues |
+
+**Usability**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **Figma Designs** | [Figma - Pe Viitor](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) | UX flows, search interaction design, mobile layouts, error state designs |
+| **Discord** | [discord.gg/KPMkdUfQNu](https://discord.gg/KPMkdUfQNu) | Community feedback, usability complaints, suggestions |
+| **GitHub Issues** | [github.com/peviitor-ro/search-engine](https://github.com/peviitor-ro/search-engine) | User-reported usability issues, feature requests |
+
+**Additional NFRs (Reliability, Availability, Compatibility, SEO)**
+
+| Source | Location | What It Contains |
+|--------|----------|------------------|
+| **Documentation** | [sad.peviitor.ro](https://sad.peviitor.ro) — Software Architecture Design | Uptime targets, backup strategy, browser support policy, SEO requirements |
+| **GitHub Issues** | [github.com/peviitor-ro](https://github.com/peviitor-ro) per repo | Reliability bugs, browser compatibility reports, SEO-related issues |
+| **Onboarding Portal** | [onboarding.peviitor.ro](https://onboarding.peviitor.ro) | General project standards, compatibility guidelines |
+
+> **Rule**: When a non-functional requirement is unclear or missing, contact the **Product Owner** for target values or the **Project Manager** for priority. For security-specific questions, escalate to the **Security Tester**. Never guess the expected behavior.
+
+### 2.3 TOOLS
+
+This section lists all testing tools used across the project, split by area, so testers know what tools are available and where to access them.
+
+**Frontend Testing**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **Manual exploratory testing** | Ad-hoc functional & UI validation | — (tester expertise) |
+| **Chrome DevTools** | Debugging, performance, network, console | Built into Chrome — `F12` / `Ctrl+Shift+I` |
+| **React DevTools** | React component inspection, state debugging | Chrome extension — [chromewebstore.google.com](https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) |
+| **Sentry** | Error monitoring, crash reporting | [sentry.io](https://sentry.io) — account required |
+| **Jest** | JavaScript unit tests (search-engine) | [jestjs.io](https://jestjs.io/) — `npm install jest` |
+| **Vitest** | JavaScript unit tests (alternative) | [vitest.dev](https://vitest.dev/) — `npm install vitest` |
+| **Playwright** | Automated E2E testing | [playwright.dev](https://playwright.dev/) — `npm init playwright` |
+
+**API Testing**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **Postman** | API endpoint testing, collections | [postman.com/downloads](https://www.postman.com/downloads/) — free tier |
+| **Bruno** | API endpoint testing (open source) | [usebruno.com/downloads](https://usebruno.com/downloads) — open source |
+| **REST Client** | Quick API testing in editor | VS Code extension — [marketplace.visualstudio.com](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) |
+| **Apache JMeter** | Functional API testing, parameterized requests, assertions | [jmeter.apache.org](https://jmeter.apache.org/) — free |
+| **PHPUnit** | Automated PHP unit & integration tests | [docs.phpunit.de](https://docs.phpunit.de/) — install via Composer |
+| **Swagger UI** | Interactive API documentation | [test.peviitor.ro/swagger-ui](https://test.peviitor.ro/swagger-ui) — public |
+
+**SOLR Indexing Testing**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **SOLR Admin UI** | Schema management, querying, index inspection | Test: [testsolr.peviitor.ro](https://testsolr.peviitor.ro) / Prod: [solr.peviitor.ro](https://solr.peviitor.ro) |
+| **curl** | Command-line SOLR queries & API calls | Built into Windows/macOS/Linux |
+| **PHP scripts (peviitor_core)** | Indexing workflows, schema validation | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) |
+
+**Data Validation Testing**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **admin.peviitor.ro** | Manual job validation, status flow | [admin.peviitor.ro](https://admin.peviitor.ro) |
+| **peviitor_core/tests** | Automated data validation scripts | [github.com/peviitor-ro/peviitor_core/tests](https://github.com/peviitor-ro/peviitor_core/tests) |
+
+**Cross-Component Integration**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **Manual end-to-end tests** | Full flow validation across components | — (tester expertise) |
+| **Postman collections** | Integration API tests across endpoints | [postman.com/downloads](https://www.postman.com/downloads/) |
+| **Integration test scripts** | Automated component interaction tests | [github.com/peviitor-ro](https://github.com/peviitor-ro) per repo |
+
+**Test Management**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **GitHub** | Test case writing, bug tracking, project management, CI/CD via GitHub Actions | [github.com/peviitor-ro](https://github.com/peviitor-ro) |
+| **TestLink** | Test case management, test plans, test execution tracking, reports | [testlink.org](https://testlink.org/) — self-hosted or hosted instance |
+| **ROADMAP project** | Sprint planning, task tracking, environment readiness, deploy status, team activity | [github.com/orgs/peviitor-ro/projects/78](https://github.com/orgs/peviitor-ro/projects/78) |
+
+**Non-Functional Testing**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **Lighthouse** | Performance & accessibility audits | Built into Chrome DevTools or CLI: `npm install -g lighthouse` |
+| **Apache JMeter** | Performance / load testing, API & SOLR query performance | [jmeter.apache.org](https://jmeter.apache.org/) — free |
+| **k6** | Performance / load testing | [grafana.com/docs/k6](https://grafana.com/docs/k6/) |
+| **OWASP ZAP** | Security testing | [zaproxy.org/download](https://www.zaproxy.org/download/) |
+| **axe DevTools** | WCAG accessibility audit | Chrome extension — [chromewebstore.google.com](https://chromewebstore.google.com/detail/axe-devtools-web-accessib/lhdoppojpmngadmnindnejefpokejbdd) |
+| **WAVE** | Accessibility evaluation | Chrome extension — [chromewebstore.google.com](https://chromewebstore.google.com/detail/wave-evaluation-tool/jbbplnpkjmmeebjpijfedlgcdilocofh) |
+| **GitHub Security Tab** | Secret Scanning, Code Scanning, Dependabot alerts | [github.com/peviitor-ro](https://github.com/peviitor-ro) — Security tab per repo |
+| **BrowserStack** | Cross-browser testing on real devices & browsers | [browserstack.com](https://www.browserstack.com) |
+| **Chrome DevTools device emulation** | Mobile viewport testing, responsive design checks | Built into Chrome — `F12` / `Ctrl+Shift+I` |
+
+**Communication**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **Discord** | Team communication, bug discussions, clarifications, deploy notifications | [discord.gg/KPMkdUfQNu](https://discord.gg/KPMkdUfQNu) — public invite |
+
+**Design**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **Figma** | UI design review, usability validation, component specs | [figma.com](https://www.figma.com) — [Pe Viitor design](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) |
+
+**Version Control**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **GitHub Desktop** | Git GUI for version control, commit management, branch handling | [desktop.github.com](https://desktop.github.com/) — free |
+
+**Local Development & Infrastructure**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **Docker Desktop** | Local environment setup (SOLR, API), container management | [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/) — free tier |
+| **CloudFlare** | CDN, DNS, DDoS protection, SSL, performance analytics | [dash.cloudflare.com](https://dash.cloudflare.com) |
+
+**Development Tools**
+
+| Tool | What It's Used For | Where to Access |
+|------|-------------------|-----------------|
+| **Visual Studio Code** | Code editor, testing scripts, REST Client extensions, debugging | [code.visualstudio.com](https://code.visualstudio.com/) — free |
+| **opencode** | AI-powered coding assistant for development & testing tasks | [opencode.ai](https://opencode.ai) — CLI tool |
+
+### 2.4 TECHNOLOGIES
+
+This section describes the key technologies used across the platform, split by component.
+
+**Frontend (search-engine)**
+
+| Technology | Purpose |
+|-----------|---------|
+| **React 18** | JavaScript library for building the user interface |
+| **Redux Toolkit** | State management for search, filters, and user interactions |
+| **Vite 5** | Build tool and dev server |
+| **Tailwind CSS 3.4** | Utility-first CSS framework for responsive design |
+| **React Router v6** | Client-side routing between pages |
+| **Radix UI** | Accessible UI primitives (tooltips, dialogs) |
+| **Lucide React** | Icon library |
+| **Sentry React** | Error monitoring and performance tracking |
+| **Microsoft Clarity** | User behavior analytics |
+| **GitHub Pages** | Hosting and delivery of the static frontend |
+
+**API (api.peviitor.ro)**
+
+| Technology | Purpose |
+|-----------|---------|
+| **PHP** | Backend language for API logic and SOLR proxying |
+| **Apache** | Web server with .htaccess configuration |
+| **REST API** | Architectural style for API endpoints — v0 (dev/test) and v1 (production) only |
+| **Swagger / OpenAPI** | API documentation and contract definition |
+| **GitHub Actions** | Automated deployment pipeline |
+
+**Core Library (peviitor_core)**
+
+| Technology | Purpose |
+|-----------|---------|
+| **PHP** | Shared models, data validation, SOLR indexing, status flow logic |
+| **Shell scripts** | Cron jobs, index optimization, URL validation pipeline |
+
+**Search & Indexing**
+
+| Technology | Purpose |
+|-----------|---------|
+| **Apache SOLR** | Search engine — dedicated cores for `job` and `company` |
+| **Basic Authentication** | Security layer for SOLR admin access |
+
+**Scrapers**
+
+| Technology | Purpose |
+|-----------|---------|
+| **Python** | Primary language for web scrapers |
+| **JavaScript / Node.js** | Secondary scraper language |
+| **Java** | Used in based_scraper_java |
+| **Apache JMeter** | JMeter-based scrapers for certain targets |
+
+**Infrastructure & DevOps**
+
+| Technology | Purpose |
+|-----------|---------|
+| **Raspberry Pi 5 (16GB RAM)** | Production server — hosts NginX Proxy Manager, Apache, PHP API, and SOLR |
+| **Raspberry Pi 4** | Test server — hosts Apache, PHP API, NginX Proxy Manager |
+| **Apache** | Web server delivering the PHP API |
+| **NginX Proxy Manager** | Reverse proxy with web UI — SSL management, request routing |
+| **CloudFlare** | CDN, DNS, DDoS protection, SSL termination |
+| **Docker** | Containerization for local development and SOLR instances |
+| **GitHub Actions** | CI/CD — automated builds, tests, and deployments |
+| **Google Sites** | Hosts certain project static sites |
+| **SonarQube** | Code quality and static analysis |
+| **Sentry** | Error monitoring for frontend and API |
+
+### 2.5 Frontend Testing (search-engine)
 
 | Area | Approach |
 |------|----------|
 | **Functional Testing** | Verify search flow: input query → API call → display results; filter by location, company, tags, work mode; pagination; empty states; error states |
 | **UI / Visual Testing** | Layout consistency, responsive design (mobile/tablet/desktop), Tailwind CSS classes, component rendering with React |
+| **UI / GUI Testing (Figma)** | Validate UI against Figma designs — layout, alignment, colors, fonts, spacing, responsive breakpoints, interactive states (hover, focus, active). Confirm correct rendering in both portrait and landscape orientations. |
+| **Automation Testing** | Automate critical E2E flows with Playwright: job search, filter application, pagination, job detail navigation. Target: 80% critical path coverage. Integrate into GitHub Actions for regression on each release. |
 | **Regression Testing** | Run on each release (~weekly), verify critical paths (search, filter, company page, job detail) |
-| **Cross-browser Testing** | Chrome, Firefox, Edge, Safari — latest 2 versions |
-| **Tools** | Manual exploratory, Chrome DevTools, React DevTools, Sentry for error monitoring |
+| **Backward Compatibility** | Test against previous front-end versions ([v01.peviitor.ro](https://v01.peviitor.ro), [v02.peviitor.ro](https://v02.peviitor.ro)) to ensure they continue to work with the latest API. The PHP API must remain backward compatible — all front-end versions (current and previous) must function correctly regardless of API evolution. Source code: **v01** → [peviitor-ro/v01](https://github.com/peviitor-ro/v01); **v02** → repo creation tracked in [search-engine#1101](https://github.com/peviitor-ro/search-engine/issues/1101). |
 
-### 2.2 API Testing (api.peviitor.ro)
+### 2.6 API Testing (api.peviitor.ro)
 
 | Area | Approach |
 |------|----------|
-| **Endpoint Validation** | Verify all REST endpoints (v0-v6): search, firme, stats; correct HTTP methods, headers, status codes |
+| **Endpoint Validation** | Verify REST endpoints — **v0** (development/testing) and **v1** (production) are the only maintained versions. All functionality from v2–v7 must be migrated into v0 and v1; intermediate versions (v2–v7) will be deleted once migration is complete and must not exist in the future. |
 | **Query Parameters** | Test `q`, `location`, `company`, `tags`, `workmode`, `page`, `limit` — valid, invalid, empty, boundary |
 | **Error Handling** | 400 Bad Request, 404 Not Found, 500 Server Error — proper error messages and HTTP codes |
 | **SOLR Proxy Behavior** | Verify API correctly proxies requests to SOLR; handle SOLR timeout/offline gracefully |
-| **Tools** | Postman, Bruno, REST Client, automated scripts (PHPUnit where applicable) |
+| **Backward Compatibility** | The PHP API must support all front-end versions (current, v01, v02). Verify that v0 and v1 endpoints return correct responses for requests from older front-end clients. |
 
-### 2.3 SOLR Indexing Testing
+### 2.7 SOLR Indexing Testing
 
 | Area | Approach |
 |------|----------|
@@ -116,9 +387,8 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 | **Facet Search** | Verify faceted counts by location, company, workmode, tags |
 | **CRUD Operations** | Index, update, delete documents; verify atomic updates, expiration cleanup (daily @ 02:00) |
 | **URL Validation Pipeline** | Verify daily @ 06:00: HEAD requests, 404 deletion, expired content detection |
-| **Tools** | SOLR Admin UI, curl, PHP scripts from peviitor_core |
 
-### 2.4 Data Validation Testing
+### 2.8 Data Validation Testing
 
 | Area | Approach |
 |------|----------|
@@ -127,9 +397,8 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 | **Company Matching** | `company` field must match Company.name (case insensitive, diacritics accepted) |
 | **Expiration Logic** | `expirationdate` = vdate + 30 days max; expired jobs deleted automatically |
 | **Duplicate Detection** | `url` must be unique; reject duplicate entries |
-| **Tools** | Manual via admin.peviitor.ro, automated scripts in peviitor_core/tests |
 
-### 2.5 Cross-Component Integration
+### 2.9 Cross-Component Integration
 
 | Area | Approach |
 |------|----------|
@@ -137,20 +406,18 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 | **API ↔ SOLR** | Verify API correctly queries SOLR, returns results in expected JSON format |
 | **Scrapers ↔ SOLR** | Verify scraped data reaches SOLR with correct fields and status |
 | **Validator ↔ Core** | Verify admin.peviitor.ro status changes propagate to SOLR index |
-| **Tools** | End-to-end manual tests, Postman collections, integration test scripts |
 
-### 2.6 Non-Functional Requirements (NFRs)
+### 2.10 Non-Functional Testing
 
-#### 2.6.1 Performance Testing
+#### 2.10.1 Performance Testing
 
 - **Search Response Time**: P95 < 2s for standard queries, P99 < 5s for complex faceted queries
 - **Indexing Throughput**: 40,000+ jobs indexed/updated daily within batch window
-- **Concurrent Users**: Support 50+ simultaneous users on Raspberry Pi 5 infrastructure
+- **Concurrent Users**: Support 50+ simultaneous users on Raspberry Pi infrastructure
 - **API Latency**: P95 < 500ms for API-only endpoints (excluding network)
-- **Tools**: Lighthouse, Chrome DevTools Performance tab, k6 (planned), SOLR query timing
 - **Frequency**: Quarterly and before major releases
 
-#### 2.6.2 Security Testing
+#### 2.10.2 Security Testing
 
 - **OWASP Top 10**: Verify application against the [OWASP Top 10](https://owasp.org/www-project-top-ten/) web application security risks (broken access control, XSS, SQL injection, etc.)
 - **SOLR Authentication**: Verify basic auth is enabled on solr.peviitor.ro (see `008_enable_solr_basic_auth_pi.sh`)
@@ -160,58 +427,69 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 - **GitHub Secret Scanning**: Automatically detects accidental commits of credentials, API keys, tokens, and other secrets across all repositories in the peviitor-ro organization. Alerts are sent to repository admins.
 - **GitHub Code Scanning (CWE)**: Uses CodeQL to analyze code for security vulnerabilities mapped to Common Weakness Enumeration (CWE). Runs on every push and pull request. Results appear in the Security tab of each repository.
 - **Dependabot**: Automated dependency monitoring that checks all libraries and packages for known vulnerabilities. Creates pull requests to update vulnerable dependencies to the latest patched version. Configured via `dependabot.yml` in each repository.
-- **Tools**: Manual testing, OWASP ZAP (planned), browser DevTools, GitHub Security tab, Dependabot alerts
 - **Frequency**: Bi-annually and after infrastructure changes; automated scanning runs on every push/PR via GitHub
 
-#### 2.6.3 Accessibility Testing
+#### 2.10.3 Accessibility Testing
 
 - **WCAG Compliance**: Target [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) — the current W3C Recommendation (October 2023) and the most widely adopted legal standard globally
 - **Keyboard Navigation**: All functionality accessible via keyboard (Tab, Enter, Escape, arrow keys)
 - **Screen Reader**: Proper ARIA labels, semantic HTML, alt text on images
 - **Color Contrast**: Minimum 4.5:1 contrast ratio for normal text
-- **Tools**: axe DevTools, Lighthouse Accessibility audit, WAVE, manual keyboard testing
 - **Frequency**: Per release and during UI changes
 
-#### 2.6.4 Usability Testing
+#### 2.10.4 Usability Testing
 
 - **Search Flow**: Intuitive search, clear filters, easy job detail access
 - **Mobile Experience**: Touch-friendly, readable on small screens, fast mobile load
 - **Onboarding**: First-time user understands how to search and filter within 30s
 - **Error Messages**: Clear, helpful error messages (e.g., "No jobs found" with suggestions)
-- **Tools**: Manual exploratory testing, Figma design review, user feedback from community
 - **Frequency**: Per release and after UX/UI changes
 
-#### 2.6.5 Additional NFRs
+#### 2.10.5 Reliability / Availability
 
-| NFR | Approach |
-|-----|----------|
-| **Reliability / Availability** | Platform uptime target: 99.5% (excluding planned maintenance); monitor via Sentry + CloudFlare analytics |
-| **Data Accuracy** | Maximum 1% stale/incorrect jobs in index; URL validation runs daily |
-| **Disaster Recovery** | SOLR index backup strategy; restore procedure documented in peviitor_core |
-| **Browser Compatibility** | Latest 2 versions of Chrome, Firefox, Edge, Safari |
-| **Mobile Responsiveness** | All pages functional on viewports ≥ 320px width |
-| **SEO** | Verify meta tags, semantic HTML, proper heading hierarchy (h1-h6) |
+- **Target**: Platform uptime 99.5% (excluding planned maintenance)
+- **Monitoring**: Sentry + CloudFlare analytics
 
-### 2.7 Requirements — Where Testers Find Them
+#### 2.10.6 Data Accuracy
 
-Testers use the following sources to understand what to test and what the expected behavior should be:
+- **Target**: Maximum 1% stale/incorrect jobs in index
+- **Approach**: URL validation pipeline runs daily to detect and remove dead links
 
-| Source | Location | What It Contains |
-|--------|----------|------------------|
-| **GitHub Issues** | [github.com/peviitor-ro](https://github.com/peviitor-ro) per repo (search-engine, api, peviitor_core) | Feature requests, bug reports, acceptance criteria, discussions |
-| **GitHub Releases** | [github.com/peviitor-ro/search-engine/releases](https://github.com/peviitor-ro/search-engine/releases) | Release notes with changelog, new features, fixed bugs |
-| **Figma Designs** | [Figma - Pe Viitor](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) | UI mockups, design system, component specs, user flows |
-| **Swagger UI** | [test.peviitor.ro/swagger-ui](https://test.peviitor.ro/swagger-ui) | API contract: endpoints, request/response schemas, status codes |
-| **peviitor_core README** | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) | Job Model Schema, Company Model Schema, field rules, status flow |
-| **Documentation** | [sad.peviitor.ro](https://sad.peviitor.ro) — Software Architecture Design | Architecture diagrams, component interactions, technology stack |
-| **Discord** | [discord.gg/KPMkdUfQNu](https://discord.gg/KPMkdUfQNu) | Real-time discussions, clarifications, decisions, meeting notes |
-| **Onboarding Portal** | [onboarding.peviitor.ro](https://onboarding.peviitor.ro) | General project overview, contributor guide, how-to guides |
+#### 2.10.7 Disaster Recovery
 
-> **Rule**: When a requirement is unclear or missing, the tester **must** ask for clarification in Discord or via a GitHub Issue before writing test cases. Never guess the expected behavior.
+- **Scope**: SOLR index backup and restoration
+- **Documentation**: Restore procedure documented in peviitor_core
+- **Frequency**: Daily automated backups
+
+#### 2.10.8 Browser Compatibility
+
+- **Scope**: Latest 2 versions of Chrome, Firefox, Edge, Safari
+- **Note**: Defined as a prerequisite before development — not a runtime test
+
+#### 2.10.9 Mobile Responsiveness
+
+- **Scope**: All pages functional on viewports ≥ 320px width
+- **Approach**: Test on real devices and Chrome DevTools device emulation
+
+#### 2.10.10 SEO
+
+- **Meta Tags**: Verify presence and correctness of title, description, Open Graph tags
+- **Semantic HTML**: Proper heading hierarchy (h1–h6), landmark elements
+- **Tools**: Lighthouse SEO audit, manual review
+
+#### 2.10.11 Cross-Browser Testing
+
+- **Scope**: Validate UI rendering and functionality across Chrome, Firefox, Edge, Safari — latest 2 versions each
+- **Approach**: Manual functional testing on each browser; verify layout, functionality, and error states are consistent
+- **Responsive Design**: Test on viewport widths from 320px to 1920px across all browsers
+- **Tools**: BrowserStack (cross-browser cloud), Chrome DevTools device emulation, manual with real devices
+- **Frequency**: Per release and after major UI changes
 
 ---
 
 ## 3. TEST TEAM
+
+The active team is listed at [oportunitatisicariere.ro/echipa.html](https://oportunitatisicariere.ro/echipa.html). Because the project relies on volunteers, the team is constantly changing — this document captures the current roles and responsibilities rather than fixed names.
 
 ### 3.1 Team Structure
 
@@ -256,13 +534,13 @@ Testers use the following sources to understand what to test and what the expect
 
 ### 3.3 Training & Onboarding
 
-New testers will be onboarded via the [peviitor.ro onboarding portal](https://onboarding.peviitor.ro/) and receive access to the tools listed in Chapter 5 (TOOLS & ACCESS). Each tester will be assigned a mentor from the existing team for the first 2 weeks.
+New testers will be onboarded via the [peviitor.ro onboarding portal](https://onboarding.peviitor.ro/) and receive access to the tools listed in section 2.3 (TOOLS). Each tester will be assigned a mentor from the existing team for the first 2 weeks.
 
 ---
 
 ## 4. TEST LEVELS / TESTING TYPES
 
-### 3.1 Unit Testing
+### 4.1 Unit Testing
 
 | Layer | Scope | Responsibility |
 |-------|-------|---------------|
@@ -271,7 +549,7 @@ New testers will be onboarded via the [peviitor.ro onboarding portal](https://on
 | **Tools** | PHPUnit, Jest, Vitest | |
 | **Frequency** | On each PR / commit | |
 
-### 3.2 Integration Testing
+### 4.2 Integration Testing
 
 | Integration | Scope |
 |-------------|-------|
@@ -281,23 +559,23 @@ New testers will be onboarded via the [peviitor.ro onboarding portal](https://on
 | **Tools** | PHPUnit (integration), Postman collections, manual |
 | **Frequency** | Weekly, before release |
 
-### 3.3 System Testing (End-to-End)
+### 4.3 System Testing (End-to-End)
 
 - **Full search flow**: user lands on peviitor.ro → searches by keyword → filters by location/workmode → views job details → clicks apply link
 - **Admin validation flow**: admin.peviitor.ro → review scraped jobs → validate/reject → verify status change in SOLR
 - **Cross-browser**: Chrome, Firefox, Edge, Safari
 - **Mobile**: responsive layout on 320px–1920px viewports
-- **Tools**: Manual exploratory, Playwright (planned)
+- **Tools**: Manual exploratory, Playwright
 - **Frequency**: Per release
 
-### 3.4 Regression Testing
+### 4.4 Regression Testing
 
 - **Critical path regression**: search, filter, pagination, job detail, company listing
 - **Scope**: Every release verifies all existing functionality is unaffected
-- **Tools**: Manual checklists, Postman collections, automated smoke suite (planned)
+- **Tools**: Manual checklists, Postman collections, automated smoke suite
 - **Frequency**: Per release (~weekly)
 
-### 3.5 Acceptance Testing
+### 4.5 Acceptance Testing
 
 - **Internal acceptance**: QA team validates against acceptance criteria from requirements
 - **Community feedback**: Bug reports from Discord, GitHub Issues triaged and verified
@@ -325,14 +603,14 @@ New testers will be onboarded via the [peviitor.ro onboarding portal](https://on
 | Component | URL | Purpose |
 |-----------|-----|---------|
 | **Frontend** | [https://test.peviitor.ro](https://test.peviitor.ro) | Integration testing, UAT, regression before release |
-| **API (Swagger UI)** | [https://test.peviitor.ro/swagger-ui](https://test.peviitor.ro/swagger-ui) | Interactive API documentation with request/response schemas for v0–v6 endpoints |
+| **API (Swagger UI)** | [https://test.peviitor.ro/swagger-ui](https://test.peviitor.ro/swagger-ui) | Interactive API documentation with request/response schemas — v0 (dev/test) and v1 (production) only |
 | **SOLR** | [https://testsolr.peviitor.ro](https://testsolr.peviitor.ro) | SOLR querying, schema validation, indexing tests, diacritics search verification |
 
 **Details:**
 - **Who Has Access**: QA team, developers
 - **Data**: A subset of production data (~5,000 jobs) refreshed periodically
 - **SOLR Cores**: `jobs`, `companies` — separate from production cores
-- **API Versions**: v0–v6 all available for testing
+- **API Versions**: v0 (dev/test) and v1 (production) — v2–v7 are being migrated into v0/v1 and will be removed
 - **CI/CD**: GitHub Actions auto-deploys on PR merge
 - **Monitoring**: Sentry.io integrated; errors triaged by severity
 
@@ -377,51 +655,41 @@ A full **release build** includes all three components deployed together with a 
 **Details:**
 - **Who Has Access**: All users (frontend); QA lead & DevOps (SOLR admin with basic auth)
 - **Data**: Full dataset — 40,000+ jobs updated daily via scrapers
-- **Infrastructure**: Raspberry Pi 5, CloudFlare CDN, ClausWeb hosting
 - **Deploy**: Manual deploy with QA lead sign-off; GitHub Actions build only
 - **Monitoring**: Sentry.io, CloudFlare analytics
 
----
+### 5.4 INFRASTRUCTURE
 
-## 6. TOOLS & ACCESS
+The **[Infrastructure Design Document (IDD)](https://idd.peviitor.ro)** at [idd.peviitor.ro](https://idd.peviitor.ro) is the authoritative reference for all infrastructure details — server specs, network topology, reverse proxy configuration, backup strategy, and deployment architecture. The tables below provide a summary.
 
-The table below centralizes all testing tools referenced in this document, along with access instructions for new testers.
+#### 5.4.1 Test Infrastructure
 
-| Tool | Used For | URL / Access / Install | Who Creates User | Who Ensures Availability |
-|------|----------|----------------------|-----------------|-------------------------|
-| **Chrome DevTools** | Frontend debugging, performance, network, console | Built into Chrome — `F12` / `Ctrl+Shift+I` | — (built-in) | — |
-| **React DevTools** | React component inspection | Chrome extension: [chromewebstore.google.com](https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) | — (built-in) | — |
-| **Sentry.io** | Error monitoring (frontend + API) | [sentry.io](https://sentry.io) — account required | | |
-| **Postman** | API endpoint testing, collections | [postman.com/downloads](https://www.postman.com/downloads/) | — (free tier) | — |
-| **Bruno** | API endpoint testing (open source alternative) | [usebruno.com/downloads](https://www.usebruno.com/downloads) | — (open source) | — |
-| **REST Client** | Quick API testing in editor | VS Code extension: [marketplace.visualstudio.com](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) | — (built-in) | — |
-| **SOLR Admin UI** | SOLR querying, schema management, indexing tests | Prod: [solr.peviitor.ro](https://solr.peviitor.ro) / Test: [testsolr.peviitor.ro](https://testsolr.peviitor.ro) | | |
-| **Swagger UI** | Interactive API documentation | [test.peviitor.ro/swagger-ui](https://test.peviitor.ro/swagger-ui) | — (public) | — |
-| **curl** | Command-line SOLR/API testing | Built into Windows/macOS/Linux | — (built-in) | — |
-| **PHPUnit** | PHP unit & integration tests | [docs.phpunit.de](https://docs.phpunit.de/) — install via Composer | Developer | Developer |
-| **Jest** | JavaScript unit tests (search-engine) | [jestjs.io](https://jestjs.io/) — `npm install jest` | Developer | Developer |
-| **Vitest** | JavaScript unit tests (search-engine alternative) | [vitest.dev](https://vitest.dev/) — `npm install vitest` | Developer | Developer |
-| **Lighthouse** | Performance & accessibility audits | Built into Chrome DevTools — or CLI: `npm install -g lighthouse` | — (built-in) | — |
-| **k6** | Performance / load testing (planned) | [grafana.com/docs/k6](https://grafana.com/docs/k6/) — installer per OS | | |
-| **OWASP ZAP** | Security testing (planned) | [zaproxy.org/download](https://www.zaproxy.org/download/) | | |
-| **axe DevTools** | Accessibility audit (WCAG) | Chrome extension: [chromewebstore.google.com](https://chromewebstore.google.com/detail/axe-devtools-web-accessib/lhdoppojpmngadmnindnejefpokejbdd) | — (built-in) | — |
-| **WAVE** | Accessibility evaluation | Chrome extension: [chromewebstore.google.com](https://chromewebstore.google.com/detail/wave-evaluation-tool/jbbplnpkjmmeebjpijfedlgcdilocofh) | — (built-in) | — |
-| **Playwright** | Automated E2E testing (planned) | [playwright.dev](https://playwright.dev/) — `npm init playwright` | Developer | Developer |
-| **GitHub Actions** | CI/CD, automated test runs | [github.com/peviitor-ro](https://github.com/peviitor-ro) — included in repos | | |
-| **GitHub Issues** | Bug tracking, test case management | [github.com/peviitor-ro](https://github.com/peviitor-ro) — included in repos | | |
-| **GitHub Secret Scanning** | Detect accidentally committed credentials, API keys, tokens | [github.com/peviitor-ro](https://github.com/peviitor-ro) — Security tab → Secret scanning | — (auto-enabled for public repos) | GitHub |
-| **GitHub Code Scanning (CodeQL)** | Analyze code for security vulnerabilities (CWE) on every push/PR | [github.com/peviitor-ro](https://github.com/peviitor-ro) — Security tab → Code scanning | — (auto-enabled) | GitHub |
-| **Dependabot** | Automated dependency vulnerability checks & update PRs | [github.com/peviitor-ro](https://github.com/peviitor-ro) — Security tab → Dependabot alerts | — (auto-enabled) | GitHub |
-| **admin.peviitor.ro** | Manual job validation | [admin.peviitor.ro](https://admin.peviitor.ro) | | |
-| **Figma** | UI design review, usability validation | [figma.com](https://www.figma.com) — [Pe Viitor design](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) | | |
-| **CloudFlare** | CDN, DNS, performance analytics | [dash.cloudflare.com](https://dash.cloudflare.com) | | |
-| **Discord** | Team communication, bug discussion | [discord.gg/KPMkdUfQNu](https://discord.gg/KPMkdUfQNu) | — (public invite) | — |
+| Component | Technology | Details |
+|-----------|-----------|---------|
+| **Application Server** | Raspberry Pi 4 | Hosts Apache, PHP API, NginX Proxy Manager |
+| **Frontend Hosting** | GitHub Pages | Delivers search-engine UI from `main` branch |
+| **SOLR** | Test SOLR instance on [testsolr.peviitor.ro](https://testsolr.peviitor.ro) | Separate cores for jobs & companies; subset of production data |
+| **Reverse Proxy** | NginX Proxy Manager | Routes traffic, manages SSL, proxies API requests |
+| **CDN / DNS** | CloudFlare | Caching, DNS, SSL termination |
+| **CI/CD** | GitHub Actions | Auto-deploys to test environment on PR merge |
+| **Monitoring** | Sentry | Error tracking for frontend & API |
 
-> **Note**: Cells marked with "—" indicate tools that are free, built-in, or publicly accessible. Empty cells need to be filled in by the project lead with the responsible person's name.
+#### 5.4.2 Production Infrastructure
+
+| Component | Technology | Details |
+|-----------|-----------|---------|
+| **Application Server** | Raspberry Pi 5 (16GB RAM) | Hosts NginX Proxy Manager, Apache, PHP API, and SOLR — single point of failure |
+| **Frontend Hosting** | GitHub Pages | Delivers search-engine UI to end users |
+| **SOLR** | SOLR instance on [solr.peviitor.ro](https://solr.peviitor.ro) | Full dataset — 40,000+ jobs updated daily |
+| **Reverse Proxy** | NginX Proxy Manager | Routes traffic, manages SSL certificates, proxies API requests to SOLR |
+| **CDN / DNS** | CloudFlare | Caching, DDoS protection, DNS resolution, SSL termination |
+| **Static Sites** | Google Sites | Hosts certain project sites |
+| **CI/CD** | GitHub Actions | Build only — manual deploy with QA lead sign-off |
+| **Monitoring** | Sentry, CloudFlare analytics | Error tracking, performance analytics |
 
 ---
 
-## 7. DELIVERABLES
+## 6. DELIVERABLES
 
 ### Test Artifacts
 
@@ -440,6 +708,74 @@ The table below centralizes all testing tools referenced in this document, along
 | Bug triage summary | Weekly | QA team, developers |
 | Test execution report | Per release | QA lead, project lead |
 | Release readiness status | Before each production deploy | All teams |
+
+### Quality Metrics & KPIs
+
+| Metric | Target | How It's Measured |
+|--------|--------|-------------------|
+| **Test Pass Rate** | ≥ 95% of all test cases passing per release | Test execution report |
+| **Automation Coverage** | ≥ 80% critical path coverage | Playwright test results vs. critical path checklist |
+| **Defect Escape Rate** | ≤ 3 high-severity bugs found in production per quarter | Bugs reported on peviitor.ro vs. those caught in testing |
+| **Search Response Time** | P95 < 2s, P99 < 5s | Lighthouse / k6 performance test results |
+| **Accessibility Compliance** | Zero critical WCAG violations per release | axe DevTools / Lighthouse audit |
+| **Regression Pass Rate** | 100% pass rate before production deploy | Regression test suite results |
+
+---
+
+## 7. TEST DATA
+
+This section defines the test data categories used across all testing levels. Test data is sourced from the production index (subset on test environment) and supplemented with synthetic data for edge cases.
+
+### 7.1 Valid Data
+
+| Category | Examples | Notes |
+|----------|----------|-------|
+| **Job Titles** | "QA", "Java Developer", "software engineer", "accountant" | Existing jobs in the index |
+| **City Input** | "București", "Cluj", "Iași", "a" (single char minimum) | Accepts at least 1 character; Romanian diacritics supported |
+| **Company Names** | "P&G", "Bit Sentinel", "EMAG" | At least 3 characters required by UI |
+| **Work Mode** | remote, on-site, hybrid | Single or multi-select via checkboxes |
+| **Combined Filters** | City + Work Mode, Company + City, all filters simultaneously | Results must match all selected criteria |
+| **Direct Search** | "Cluj remote QA", "București software engineer" | User types free-form search with filter values |
+
+### 7.2 Invalid Data
+
+| Category | Examples | Expected Behavior |
+|----------|----------|-------------------|
+| **Company < 3 chars** | "AB", "X", "" | UI should reject or API return 400; clear error message |
+| **Non-existent values** | City: "Atlantis", Company: "FakeCorp999", random strings ("xyz123") | Empty results with "no jobs found" message |
+| **Special characters** | `<script>`, `DROP TABLE`, `%`, `_`, `\` | Input sanitized; no XSS or injection; returned as literal search |
+| **Invalid city input** | Numbers-only city, symbols in city field | Treated as search term; zero or unexpected results |
+
+### 7.3 Edge Cases
+
+| Scenario | Input | Expected Behavior |
+|----------|-------|-------------------|
+| **Very long input** | > 500 characters | Truncated or rejected gracefully; no crash |
+| **Empty search** | Empty string or only whitespace | Either no-op (button disabled) or returns all results |
+| **Case sensitivity** | "qa" vs "QA", "BUCURESTI" vs "București" | Search is case-insensitive; diacritics-insensitive |
+| **Rapid typing** | Fast consecutive keystrokes in search input | Debounced API calls; no duplicate requests or race conditions |
+| **Overlapping input** | Filter values typed directly into search | Correctly interpreted and combined with selected filters |
+| **All filters + search** | Max combination: query + city + company + multiple work modes | Correct intersection of all criteria |
+| **UI overflow** | Long company name, very long job title in card | Text truncated with ellipsis; no layout breakage |
+| **Pagination edges** | Exactly 10 results, 11 results, 0 results after last page | Correct page count; "no more results" state on last page |
+
+### 7.4 No-Result Scenarios
+
+| Scenario | Input | Expected Behavior |
+|----------|-------|-------------------|
+| **Valid but unmatched** | "nuclear physicist" (a real job title not in index) | "No jobs found" message with suggestion to broaden search |
+| **Over-filtered** | City: "București" + Company: "NonExistent SRL" | Empty results; clear message indicating no matches |
+| **Expired jobs** | Search for a job that has passed its expiration date | Not displayed in results; no error |
+| **Invalid URL job** | Job whose `url` returns 404 | Marked as `tested` (not `published`); excluded from search |
+
+### 7.5 Test Data Sources
+
+| Source | Description | Used For |
+|--------|-------------|----------|
+| **Production SOLR subset** | ~5,000 jobs copied to test SOLR instance | Functional, integration, regression testing |
+| **admin.peviitor.ro** | Manual data entry and status transitions | Data validation, status flow testing |
+| **Synthetic test data** | Manually crafted JSON payloads for edge cases | API testing (boundary, invalid, missing fields) |
+| **Scraper output** | Freshly scraped jobs from target websites | End-to-end, data accuracy, pipeline testing |
 
 ---
 
@@ -485,9 +821,25 @@ All bugs are tracked in **GitHub Issues** under the relevant repository (search-
 - **Expected Result**: What should happen
 - **Screenshots / Video**: Visual evidence (if applicable)
 - **Browser / Device**: Chrome, Firefox, Edge, Safari + version
-- **Severity**: See 10.3
+- **Severity**: See 10.5
 
-### 10.2 Bug States
+### 10.2 Defect Triage
+
+All newly reported bugs go through a triage process before being assigned:
+
+| Step | Who | Action |
+|------|-----|--------|
+| 1 | **QA Tester** | Reports bug with all required fields (see 10.1); adds label `status/triage` |
+| 2 | **QA Lead** | Reviews daily — confirms reproduction, checks for duplicates, validates severity |
+| 3 | **QA Lead** | Removes `status/triage` label; adds `bug` label; assigns to developer or rejects with reason |
+| 4 | **Project Manager** | Sets priority based on business impact (see 10.4) |
+| 5 | **Developer** | Picks up assigned bug and moves to In Progress |
+
+Triage happens **daily** during weekdays. Critical (S2) and Blocker (S1) bugs are triaged within **4 hours** of reporting.
+
+### 10.3 Bug States
+
+- **Severity**: See 10.5
 
 ```
 [New] → [Assigned] → [In Progress] → [Fixed] → [Verified] → [Closed]
@@ -506,9 +858,21 @@ All bugs are tracked in **GitHub Issues** under the relevant repository (search-
 | **Rejected** | Not a bug / duplicates / cannot reproduce |
 | **Reopened** | Bug reappears after verification |
 
-### 10.4 Severity
+### 10.4 Priority
 
-Severity describes the **technical impact** of the bug (how bad the problem is). Priority is set separately by the Product Owner based on business urgency and is not tracked in this document.
+Priority describes the **business urgency** of fixing the bug. It is set by the **Project Manager** during triage and may change based on release deadlines or business impact.
+
+| Level | Label | Description | Typical SLA |
+|-------|-------|-------------|-------------|
+| **P1 - Critical** | `priority/critical` | Must be fixed immediately — blocks the release | Fixed within 24h |
+| **P2 - High** | `priority/high` | Should be fixed before the next release | Fixed within current sprint |
+| **P3 - Medium** | `priority/medium` | Fix in a future release if time permits | Next sprint or later |
+| **P4 - Low** | `priority/low` | Fix when convenient — nice to have | No fixed deadline |
+| **P5 - Wishlist** | `priority/wishlist` | Tracked for future consideration | No deadline |
+
+### 10.5 Severity
+
+Severity describes the **technical impact** of the bug (how bad the problem is). Priority is set separately by the Product Owner based on business urgency and is tracked via the labels above.
 
 #### Severity Levels
 
@@ -526,7 +890,7 @@ Severity describes the **technical impact** of the bug (how bad the problem is).
 
 | Risk | Description | Probability | Impact | Mitigation |
 |------|-------------|-------------|--------|------------|
-| **Single point of failure — Raspberry Pi 5** | Production server runs on a single Raspberry Pi 5. Hardware failure would take down peviitor.ro entirely. | Low | Critical | Daily SOLR backups; documented restore procedure; standby recovery plan via ClausWeb hosting |
+| **Single point of failure — Raspberry Pi 5 (16GB RAM)** | Production server runs on a single Raspberry Pi 5 running NginX Proxy Manager, Apache, PHP API, and SOLR. Hardware failure would take down peviitor.ro entirely. | Low | Critical | Daily SOLR backups; documented restore procedure; recovery plan via secondary infrastructure |
 | **Data quality from scrapers** | Scrapers may return incomplete or incorrect data (missing fields, wrong salary, dead URLs). | Medium | High | Daily URL validation pipeline (HEAD requests, 404 deletion); admin.peviitor.ro manual validation; status flow (scraped → tested → verified → published) |
 | **Scraper breakage** | Target websites change their HTML structure, CSS selectors, or add anti-bot measures (CAPTCHA, IP blocking). | Medium | Major | Community-driven maintenance; multiple scraper technologies (Python, JS, JMeter); quick fallback to "tested" status |
 | **SOLR index corruption** | SOLR index may become corrupted due to power failure, disk full, or software bug. | Low | Critical | Automated daily cron jobs for index optimization; backup scripts in peviitor_core; separate test SOLR for validation before production indexing |
@@ -538,9 +902,19 @@ Severity describes the **technical impact** of the bug (how bad the problem is).
 
 ---
 
-## 12. ANNEX
+## 12. CONCLUSION
 
-### 12.1 Bug Report Template
+This Test Strategy provides a structured framework for validating the peviitor.ro job search engine across all components — from SOLR indexing and the PHP API to the React frontend and the scraper pipeline. By defining clear requirements sources, test data categories, entry/exit criteria, and a risk-aware mitigation plan, this document ensures that every release meets the functional, performance, security, accessibility, and usability standards required to serve job seekers across Romania.
+
+The strategy is a living document that evolves with the platform. As new features are added, technologies change, or the community grows, this document will be updated to reflect the current testing approach. All team members are encouraged to propose improvements via GitHub Issues.
+
+Following this strategy, we aim to deliver a reliable, fast, and user-friendly job search experience that fulfills peviitor.ro's primary mission: providing a comprehensive, up-to-date aggregated database of all jobs in Romania.
+
+---
+
+## Appendix A — Test Artifacts
+
+### A.1 Bug Report Template
 
 ```
 **Title**: [Short descriptive summary]
@@ -567,7 +941,7 @@ Severity describes the **technical impact** of the bug (how bad the problem is).
 **Additional Context**: Network tab shows GET /api/v6/search?page=3 returns 404
 ```
 
-### 12.2 Test Case Example
+### A.2 Test Case Example
 
 ```
 Test Case ID: TC-SEARCH-001
@@ -590,7 +964,7 @@ Expected Result:
 - No error messages are shown
 ```
 
-### 12.3 Test Execution Report Template
+### A.3 Test Execution Report Template
 
 ```
 TEST EXECUTION REPORT
@@ -637,14 +1011,16 @@ Environment: test.peviitor.ro
 ```
 
 ---
-## Appendix A — GitHub Repositories
+## Appendix B — GitHub Repositories
 
 | Component | Repository | URL |
 |-----------|-----------|-----|
-| Frontend | search-engine | [github.com/peviitor-ro/search-engine](https://github.com/peviitor-ro/search-engine) |
+| Frontend (current) | search-engine | [github.com/peviitor-ro/search-engine](https://github.com/peviitor-ro/search-engine) |
+| Frontend v01 | v01 | [github.com/peviitor-ro/v01](https://github.com/peviitor-ro/v01) |
 | API | api.peviitor.ro | [github.com/peviitor-ro/api.peviitor.ro](https://github.com/peviitor-ro/api.peviitor.ro) |
 | Core (indexing, schemas, workflows) | peviitor_core | [github.com/peviitor-ro/peviitor_core](https://github.com/peviitor-ro/peviitor_core) |
-| Validator | admin.peviitor.ro | [github.com/peviitor-ro/admin.peviitor.ro](https://github.com/peviitor-ro/admin.peviitor.ro) |
+| Validator UI | validator-ui | [github.com/peviitor-ro/validator-ui](https://github.com/peviitor-ro/validator-ui) |
+| Validator (legacy) | admin.peviitor.ro | [github.com/peviitor-ro/admin.peviitor.ro](https://github.com/peviitor-ro/admin.peviitor.ro) |
 | Mobile app (separate strategy) | androidAPP | [github.com/peviitor-ro/androidAPP](https://github.com/peviitor-ro/androidAPP) |
 | Scrapers frontend | frontend | [github.com/peviitor-ro/frontend](https://github.com/peviitor-ro/frontend) |
 | Scrapers scraping | scraping | [github.com/peviitor-ro/scraping](https://github.com/peviitor-ro/scraping) |
