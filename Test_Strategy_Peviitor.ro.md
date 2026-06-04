@@ -58,6 +58,7 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 - Mobile application testing (androidAPP) — will be covered in a separate test strategy for mobile testing
 - [orase.peviitor.ro](https://orase.peviitor.ro) — will be covered in a separate test strategy document
 - [firme.zira.ro](https://firme.zira.ro) and [admin.zira.ro](https://admin.zira.ro) — will be covered in a separate test strategy document
+- [splash.peviitor.ro](https://splash.peviitor.ro) — static fallback page hosted on Google Sites, outside the testing scope of the main platform
 
 ### 1.3 General Objectives
 
