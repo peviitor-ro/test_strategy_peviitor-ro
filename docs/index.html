@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Strategy — peviitor.ro</title>
+  <meta name="description" content="Test Strategy for peviitor.ro — open source job search engine for Romania">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-900: #0a2e42;
+      --blue-800: #0f4260;
+      --blue-700: #1a6b8a;
+      --blue-600: #1e7fa3;
+      --blue-500: #2693bc;
+      --blue-400: #4dafd1;
+      --blue-100: #e3f2f9;
+      --blue-50: #f0f8fc;
+      --gray-900: #111827;
+      --gray-800: #1f2937;
+      --gray-700: #374151;
+      --gray-600: #4b5563;
+      --gray-500: #6b7280;
+      --gray-400: #9ca3af;
+      --gray-300: #d1d5db;
+      --gray-200: #e5e7eb;
+      --gray-100: #f3f4f6;
+      --gray-50: #f9fafb;
+      --white: #ffffff;
+      --green-600: #059669;
+      --green-100: #d1fae5;
+      --amber-600: #d97706;
+      --amber-100: #fef3c7;
+      --red-600: #dc2626;
+      --red-100: #fee2e2;
+      --purple-600: #7c3aed;
+      --purple-100: #ede9fe;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      line-height: 1.6;
+    }
+    pre, code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+    header {
+      background: linear-gradient(135deg, var(--purple-600) 0%, var(--blue-700) 50%, var(--blue-600) 100%);
+      color: var(--white);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      position: relative;
+    }
+    header h1 span { color: var(--blue-400); }
+    header p {
+      font-size: 1.125rem;
+      opacity: 0.85;
+      margin-top: 0.5rem;
+      position: relative;
+    }
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+      position: relative;
+    }
+
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    nav .inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 0.25rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    nav .inner::-webkit-scrollbar { display: none; }
+    nav a {
+      display: block;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--gray-600);
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    nav a:hover, nav a:focus { color: var(--purple-600); border-bottom-color: var(--purple-600); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    .hero {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    .hero h2 { font-size: 1.75rem; font-weight: 600; color: var(--purple-600); }
+    .hero p { color: var(--gray-600); max-width: 700px; margin: 0.75rem auto 0; }
+    .hero .meta { font-size: 0.875rem; color: var(--gray-500); margin-top: 0.75rem; }
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .hero-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .hero-links a.primary { background: var(--purple-600); color: var(--white); }
+    .hero-links a.primary:hover { background: var(--blue-700); }
+    .hero-links a.secondary { background: var(--gray-100); color: var(--gray-700); }
+    .hero-links a.secondary:hover { background: var(--gray-200); }
+
+    section {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    section h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--purple-600);
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    section h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin: 1.5rem 0 0.75rem;
+    }
+    section h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin: 1rem 0 0.5rem;
+    }
+    section .body { padding: 1.5rem; }
+    section .body > * + * { margin-top: 1rem; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 0.75rem 0;
+    }
+    thead { background: var(--gray-100); }
+    th {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      border-bottom: 2px solid var(--gray-200);
+    }
+    td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: top;
+    }
+    tr:hover td { background: var(--gray-50); }
+    table.compact td, table.compact th { padding: 0.4rem 0.6rem; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: box-shadow 0.15s;
+    }
+    .card:hover { box-shadow: var(--shadow); }
+    .card h4 { margin: 0 0 0.5rem; color: var(--blue-700); }
+    .card p { font-size: 0.875rem; color: var(--gray-600); }
+    .card .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+    .tag-green { background: var(--green-100); color: var(--green-600); }
+    .tag-amber { background: var(--amber-100); color: var(--amber-600); }
+    .tag-red { background: var(--red-100); color: var(--red-600); }
+    .tag-blue { background: var(--blue-100); color: var(--blue-700); }
+    .tag-purple { background: var(--purple-100); color: var(--purple-600); }
+
+    pre {
+      background: var(--gray-900);
+      color: #e5e7eb;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.8rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+    }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
+      background: var(--gray-100);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+    pre code { background: none; padding: 0; font-size: inherit; }
+
+    ul, ol { padding-left: 1.5rem; }
+    li { margin: 0.3rem 0; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .kpi {
+      text-align: center;
+      padding: 1.25rem;
+      background: var(--purple-100);
+      border-radius: var(--radius);
+    }
+    .kpi .value { font-size: 1.75rem; font-weight: 700; color: var(--purple-600); }
+    .kpi .label { font-size: 0.8rem; color: var(--gray-600); margin-top: 0.25rem; }
+
+    .quote {
+      border-left: 4px solid var(--purple-600);
+      background: var(--gray-50);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-style: italic;
+      color: var(--gray-700);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      color: var(--gray-500);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--gray-200);
+      margin-top: 2rem;
+    }
+    footer a { color: var(--purple-600); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.75rem; }
+      header { padding: 2rem 1rem; }
+      .container { padding: 1rem; }
+      section .body { padding: 1rem; }
+      section h2 { padding: 1rem; font-size: 1.1rem; }
+      table { font-size: 0.8rem; }
+      th, td { padding: 0.4rem 0.5rem; }
+    }
+
+    @media print {
+      nav { display: none; }
+      header { padding: 1.5rem; }
+      section { break-inside: avoid; box-shadow: none; border: 1px solid var(--gray-200); }
+      .hero-links a { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Test Strategy<span>.</span>peviitor<span>.ro</span></h1>
+  <p>Test Strategy — Documentație de Testare</p>
+  <div class="badge">v1.0 &mdash; Iunie 2026 &mdash; Author: Diana Dragoi</div>
+</header>
+
+<nav>
+  <div class="inner">
+    <a href="#scope">Scope</a>
+    <a href="#approach">Approach</a>
+    <a href="#team">Test Team</a>
+    <a href="#levels">Test Levels</a>
+    <a href="#environments">Environments</a>
+    <a href="#deliverables">Deliverables</a>
+    <a href="#bug">Bug Lifecycle</a>
+    <a href="#references">References</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <div class="hero">
+    <h2>🧪 Test Strategy — peviitor.ro</h2>
+    <p>Open source job search engine for Romania — <strong>the place to find your dream job, just one click away</strong></p>
+    <div class="meta">Author: Diana Dragoi &mdash; Reviewed by: Ana-Maria Talmacel (QA Lead) &mdash; Approved by: Boga Sebastian-Nicolae (PO)</div>
+    <div class="hero-links">
+      <a href="https://peviitor.ro" class="primary" target="_blank" rel="noopener">Platforma Live &rarr;</a>
+      <a href="https://sad.peviitor.ro" class="secondary" target="_blank" rel="noopener">SAD</a>
+      <a href="https://idd.peviitor.ro" class="secondary" target="_blank" rel="noopener">IDD</a>
+      <a href="https://github.com/peviitor-ro/test_strategy_peviitor-ro" class="secondary" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+
+  <!-- 1. SCOPE -->
+  <section id="scope">
+    <h2>&#8288;1. Scope</h2>
+    <div class="body">
+      <div class="quote">&#9888;&#65039; Always keep in mind: The primary mission of peviitor.ro is to provide users with a comprehensive, up-to-date aggregated database of all jobs in Romania. Every test, decision, and validation should serve this goal.</div>
+
+      <h3>1.1 Scope of Testing</h3>
+      <div class="card-grid">
+        <div class="card">
+          <h4>Apache SOLR</h4>
+          <p>Schema validation, diacritics search, CRUD operations, URL validation pipeline, expiration cleanup</p>
+          <span class="tag tag-purple">Core</span>
+        </div>
+        <div class="card">
+          <h4>PHP API (api.peviitor.ro)</h4>
+          <p>Endpoint validation, query parameters, error handling, SOLR proxy behavior, backward compatibility</p>
+          <span class="tag tag-blue">v0 / v1</span>
+        </div>
+        <div class="card">
+          <h4>UI (search-engine)</h4>
+          <p>Functional testing, UI/Figma compliance, automation (Playwright), regression, backward compatibility</p>
+          <span class="tag tag-green">React</span>
+        </div>
+        <div class="card">
+          <h4>Search Functionality</h4>
+          <p>Full-text search, filters, relevance scoring, pagination, autocomplete, empty states</p>
+          <span class="tag tag-amber">edismax</span>
+        </div>
+      </div>
+
+      <h3>1.2 Out of Scope</h3>
+      <p>Individual scraper testing, Validator (admin.peviitor.ro), Mobile application (androidAPP), orase.peviitor.ro, firme.zira.ro and admin.zira.ro</p>
+
+      <h3>1.3 Quality Benefits Targeted</h3>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="value">&lt;2s</div><div class="label">Search Response Time</div></div>
+        <div class="kpi"><div class="value">&ge;95%</div><div class="label">Test Pass Rate</div></div>
+        <div class="kpi"><div class="value">&ge;80%</div><div class="label">Automation Coverage</div></div>
+        <div class="kpi"><div class="value">WCAG 2.2 AA</div><div class="label">Accessibility Target</div></div>
+        <div class="kpi"><div class="value">OWASP Top 10</div><div class="label">Security Compliance</div></div>
+        <div class="kpi"><div class="value">99.5%</div><div class="label">Platform Uptime</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. TESTING APPROACH -->
+  <section id="approach">
+    <h2>&#8288;2. Testing Approach</h2>
+    <div class="body">
+
+      <h3>2.1 Requirements</h3>
+      <p>Testers should consult <a href="https://sad.peviitor.ro" target="_blank">SAD (sad.peviitor.ro)</a> and <a href="https://idd.peviitor.ro" target="_blank">IDD (idd.peviitor.ro)</a> as the authoritative sources for functional and non-functional requirements.</p>
+
+      <h3>2.2 Tools</h3>
+      <div class="card-grid">
+        <div class="card"><h4>Frontend Testing</h4><p>Playwright, Jest, Vitest, Chrome DevTools, Sentry</p></div>
+        <div class="card"><h4>API Testing</h4><p>Postman, Bruno, JMeter, PHPUnit, Swagger UI</p></div>
+        <div class="card"><h4>SOLR Testing</h4><p>SOLR Admin UI, curl, PHP scripts (peviitor_core)</p></div>
+        <div class="card"><h4>Performance</h4><p>k6, JMeter, Lighthouse</p></div>
+        <div class="card"><h4>Security</h4><p>OWASP ZAP, GitHub Secret Scanning, CodeQL, Dependabot</p></div>
+        <div class="card"><h4>Accessibility</h4><p>axe DevTools, WAVE, Lighthouse</p></div>
+        <div class="card"><h4>Test Management</h4><p>GitHub Issues, TestLink, ROADMAP project</p></div>
+        <div class="card"><h4>Cross-Browser</h4><p>BrowserStack, Chrome DevTools device emulation</p></div>
+      </div>
+
+      <h3>2.3 Testing by Area</h3>
+      <div class="grid-2">
+        <div>
+          <h4>Frontend</h4>
+          <ul>
+            <li>Functional: search, filter, pagination, empty/error states</li>
+            <li>UI/Figma compliance: layout, colors, responsive</li>
+            <li>Automation: Playwright E2E (80% critical path)</li>
+            <li>Regression: weekly per release</li>
+            <li>Backward compatibility: v01, v02</li>
+          </ul>
+        </div>
+        <div>
+          <h4>API</h4>
+          <ul>
+            <li>Endpoint validation (v0, v1)</li>
+            <li>Query parameters (valid, invalid, empty, boundary)</li>
+            <li>Error handling (400, 404, 500)</li>
+            <li>SOLR proxy behavior (timeout, offline)</li>
+            <li>Backward compatibility</li>
+          </ul>
+        </div>
+        <div>
+          <h4>SOLR Indexing</h4>
+          <ul>
+            <li>Schema compliance (Job Model)</li>
+            <li>Diacritics search (București &harr; Bucuresti)</li>
+            <li>Full-text search, facet search</li>
+            <li>CRUD operations, expiration cleanup</li>
+            <li>URL validation pipeline (HEAD daily)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Data Validation</h4>
+          <ul>
+            <li>Job status flow (scraped &rarr; tested/verified &rarr; published)</li>
+            <li>Field validation (required, format, max length)</li>
+            <li>Company matching (case insensitive)</li>
+            <li>Duplicate detection (unique url)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>2.4 Non-Functional Testing</h3>
+      <div class="card-grid">
+        <div class="card"><h4>Performance</h4><p>P95 &lt; 2s search, P95 &lt; 500ms API, 50+ concurrent users</p></div>
+        <div class="card"><h4>Security</h4><p>OWASP Top 10, SOLR Basic Auth, CORS, XSS, SQL injection</p></div>
+        <div class="card"><h4>Accessibility</h4><p>WCAG 2.2 AA, keyboard nav, screen reader, color contrast 4.5:1</p></div>
+        <div class="card"><h4>Reliability</h4><p>99.5% uptime, Sentry + CloudFlare monitoring</p></div>
+        <div class="card"><h4>Browser Compat.</h4><p>Latest 2 versions Chrome, Firefox, Edge, Safari</p></div>
+        <div class="card"><h4>Mobile</h4><p>All pages functional on viewports &ge; 320px</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. TEST TEAM -->
+  <section id="team">
+    <h2>&#8288;3. Test Team</h2>
+    <div class="body">
+      <div class="card-grid">
+        <div class="card">
+          <h4>Manual QA &times;5</h4>
+          <p>Functional testing, regression, exploratory, bug reporting, cross-browser, data validation</p>
+        </div>
+        <div class="card">
+          <h4>Automation QA &times;2</h4>
+          <p>Playwright E2E, API test automation, CI/CD integration, regression automation</p>
+        </div>
+        <div class="card">
+          <h4>Performance Tester &times;1</h4>
+          <p>k6 load testing, SOLR query monitoring, Lighthouse audits, capacity planning</p>
+        </div>
+        <div class="card">
+          <h4>Security Tester &times;1</h4>
+          <p>OWASP ZAP, penetration testing, CodeQL, Dependabot, secret scanning</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. TEST LEVELS -->
+  <section id="levels">
+    <h2>&#8288;4. Test Levels</h2>
+    <div class="body">
+      <table class="compact">
+        <thead><tr><th>Level</th><th>Scope</th><th>Frequency</th><th>Tools</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Unit</strong></td><td>PHP utility functions, Redux slices, selectors</td><td>Per PR/commit</td><td>PHPUnit, Jest, Vitest</td></tr>
+          <tr><td><strong>Integration</strong></td><td>API &harr; SOLR, Frontend &harr; API, Scrapers &rarr; Core</td><td>Weekly, before release</td><td>PHPUnit, Postman</td></tr>
+          <tr><td><strong>System (E2E)</strong></td><td>Full search flow, admin validation flow, cross-browser, mobile</td><td>Per release</td><td>Manual, Playwright</td></tr>
+          <tr><td><strong>Regression</strong></td><td>Critical paths: search, filter, pagination, job detail, company</td><td>Per release (~weekly)</td><td>Manual checklists, Postman, smoke suite</td></tr>
+          <tr><td><strong>Acceptance</strong></td><td>Validate against acceptance criteria</td><td>Per release</td><td>Manual</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 5. ENVIRONMENTS -->
+  <section id="environments">
+    <h2>&#8288;5. Test Environments</h2>
+    <div class="body">
+      <table class="compact">
+        <thead><tr><th>Environment</th><th>URL</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Production</strong></td><td><a href="https://peviitor.ro" target="_blank">peviitor.ro</a></td><td>Live platform</td></tr>
+          <tr><td><strong>Test</strong></td><td><a href="https://test.peviitor.ro" target="_blank">test.peviitor.ro</a></td><td>Integration, UAT, regression</td></tr>
+          <tr><td><strong>Local</strong></td><td><code>http://localhost:3000</code></td><td>Development, unit testing (Docker)</td></tr>
+        </tbody>
+      </table>
+      <p><strong>SOLR Test:</strong> <a href="https://testsolr.peviitor.ro" target="_blank">testsolr.peviitor.ro</a> &mdash; <strong>API Swagger:</strong> <a href="https://test.peviitor.ro/swagger-ui" target="_blank">test.peviitor.ro/swagger-ui</a></p>
+    </div>
+  </section>
+
+  <!-- 6. DELIVERABLES -->
+  <section id="deliverables">
+    <h2>&#8288;6. Deliverables &amp; Metrics</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div>
+          <h3>Artifacts</h3>
+          <table class="compact">
+            <thead><tr><th>Artifact</th><th>Frequency</th></tr></thead>
+            <tbody>
+              <tr><td>Test cases &amp; checklists</td><td>Per release</td></tr>
+              <tr><td>Bug reports (GitHub Issues)</td><td>Daily</td></tr>
+              <tr><td>Test Summary Report</td><td>Per release</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3>KPIs</h3>
+          <table class="compact">
+            <thead><tr><th>KPI</th><th>Target</th></tr></thead>
+            <tbody>
+              <tr><td>Test Pass Rate</td><td>&ge; 95%</td></tr>
+              <tr><td>Automation Coverage</td><td>&ge; 80% critical path</td></tr>
+              <tr><td>Defect Escape Rate</td><td>&le; 3 high-severity/quarter</td></tr>
+              <tr><td>Search Response Time</td><td>P95 &lt; 2s</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. BUG LIFECYCLE -->
+  <section id="bug">
+    <h2>&#8288;7. Bug Lifecycle</h2>
+    <div class="body">
+      <pre>[New] &rarr; [Assigned] &rarr; [In Progress] &rarr; [Fixed] &rarr; [Verified] &rarr; [Closed]</pre>
+      <div class="card-grid">
+        <div class="card">
+          <h4>S1 — Blocker</h4>
+          <p>Critical: no workaround, blocks testing/deployment</p>
+          <span class="tag tag-red">Resolve &lt; 4h</span>
+        </div>
+        <div class="card">
+          <h4>S2 — High</h4>
+          <p>Major feature broken, workaround exists</p>
+          <span class="tag tag-amber">Resolve &lt; 4h</span>
+        </div>
+        <div class="card">
+          <h4>S3 — Medium</h4>
+          <p>Minor feature broken, cosmetic issues</p>
+          <span class="tag tag-blue">Next release</span>
+        </div>
+        <div class="card">
+          <h4>S4 — Trivial</h4>
+          <p>Cosmetic, low priority</p>
+          <span class="tag tag-green">Backlog</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. REFERENCES -->
+  <section id="references">
+    <h2>&#8288;8. References</h2>
+    <div class="body">
+      <table class="compact">
+        <thead><tr><th>Document</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Software Architecture Design (SAD)</td><td><a href="https://sad.peviitor.ro" target="_blank">sad.peviitor.ro</a></td></tr>
+          <tr><td>Infrastructure Design Document (IDD)</td><td><a href="https://idd.peviitor.ro" target="_blank">idd.peviitor.ro</a></td></tr>
+          <tr><td>Markdown Version</td><td><a href="https://github.com/peviitor-ro/test_strategy_peviitor-ro/blob/master/Test_Strategy_Peviitor.ro.md" target="_blank">GitHub (MD)</a></td></tr>
+          <tr><td>PDF Version</td><td><a href="https://github.com/peviitor-ro/test_strategy_peviitor-ro/blob/master/Test_Strategy_Peviitor.ro_v1.pdf" target="_blank">GitHub (PDF)</a></td></tr>
+          <tr><td>Onboarding Portal</td><td><a href="https://onboarding.peviitor.ro" target="_blank">onboarding.peviitor.ro</a></td></tr>
+          <tr><td>ROADMAP</td><td><a href="https://github.com/orgs/peviitor-ro/projects/78" target="_blank">GitHub Project #78</a></td></tr>
+          <tr><td>Discord</td><td><a href="https://discord.gg/KPMkdUfQNu" target="_blank">discord.gg/KPMkdUfQNu</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>&copy; 2022&ndash;2026 <a href="https://peviitor.ro">peviitor.ro</a> &mdash; Open Source</p>
+  <p style="margin-top:0.25rem;">Author: Diana Dragoi | Reviewed by: Ana-Maria Talmacel (QA Lead) | Approved by: Boga Sebastian-Nicolae (PO)</p>
+</footer>
+
+</body>
+</html>
