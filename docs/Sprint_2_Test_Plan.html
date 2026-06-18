@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 2 — Test Plan | peviitor.ro</title>
+<style>
+  :root {
+    --green: #10b981;
+    --green-dark: #059669;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --accent: #f0fdf4;
+    --purple: #8b5cf6;
+    --purple-bg: #f5f3ff;
+    --amber: #f59e0b;
+    --amber-bg: #fffbeb;
+    --blue: #3b82f6;
+    --blue-bg: #eff6ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+  }
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  .header {
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: white;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+  }
+  .header h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+  .header .subtitle { font-size: 1rem; opacity: 0.9; }
+  .header .meta {
+    margin-top: 1rem;
+    display: flex; gap: 2rem; flex-wrap: wrap;
+    font-size: 0.9rem; opacity: 0.85;
+  }
+  .header .meta span { display: flex; align-items: center; gap: 0.4rem; }
+
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .card h2 {
+    font-size: 1.35rem;
+    color: var(--green-dark);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+  }
+  .card h3 {
+    font-size: 1.05rem;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+  .card h4 {
+    font-size: 0.95rem;
+    color: var(--text);
+    margin: 1rem 0 0.25rem;
+  }
+  .card p { margin-bottom: 0.75rem; color: var(--text-muted); }
+  .card ul { margin: 0.5rem 0 0.75rem 1.5rem; color: var(--text-muted); }
+  .card li { margin-bottom: 0.35rem; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    font-size: 0.9rem;
+  }
+  th, td {
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--accent);
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  tr:hover td { background: #fafcff; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-high { background: #fef2f2; color: #dc2626; }
+  .badge-medium { background: #fffbeb; color: #d97706; }
+  .badge-low { background: #f0fdf4; color: #16a34a; }
+
+  .checklist { list-style: none; margin: 0.5rem 0 !important; }
+  .checklist li::before { content: "\2610 "; color: var(--text-muted); }
+
+  .risk-high { color: #dc2626; font-weight: 600; }
+  .risk-medium { color: #d97706; font-weight: 600; }
+  .risk-low { color: #16a34a; font-weight: 600; }
+
+  code {
+    background: #f1f5f9;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+
+  .contributor-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+  }
+  .contributor-card.pm { background: var(--blue-bg); border-left: 4px solid var(--blue); }
+  .contributor-card.qa { background: var(--accent); border-left: 4px solid var(--green); }
+  .contributor-card.po { background: var(--purple-bg); border-left: 4px solid var(--purple); }
+  .contributor-card.dev { background: var(--amber-bg); border-left: 4px solid var(--amber); }
+  .contributor-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .contributor-card.pm .contributor-avatar { background: var(--blue); color: white; }
+  .contributor-card.qa .contributor-avatar { background: var(--green); color: white; }
+  .contributor-card.po .contributor-avatar { background: var(--purple); color: white; }
+  .contributor-card.dev .contributor-avatar { background: var(--amber); color: white; }
+  .contributor-info .name { font-weight: 600; }
+  .contributor-info .role { font-size: 0.85rem; color: var(--text-muted); }
+
+  .roadmap-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--blue-bg);
+    color: var(--blue);
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    border: 1px solid var(--blue);
+    transition: background 0.2s;
+  }
+  .roadmap-link:hover { background: #dbeafe; }
+
+  .footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 2rem 0 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    .header { padding: 1.5rem; }
+    .header h1 { font-size: 1.5rem; }
+    .card { padding: 1.25rem; }
+    table { font-size: 0.8rem; }
+    th, td { padding: 0.4rem 0.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Test Plan &mdash; Sprint 2</h1>
+    <p class="subtitle">peviitor.ro &mdash; Locul de muncă visat, la un click distanță</p>
+    <div class="meta">
+      <span>&#128197; 07 Aprilie &ndash; 20 Aprilie 2026</span>
+      <span>&#128100; Diana Dragoi</span>
+      <span>&#128196; Based on: Test Strategy &mdash; peviitor.ro v1.0</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>ROADMAP Sprint 2</h2>
+    <p>Sprint 2 face parte din proiectul general <strong>peviitor.ro ROADMAP</strong>, care poate fi accesat integral mai jos:</p>
+    <a class="roadmap-link" href="https://github.com/orgs/peviitor-ro/projects/78" target="_blank" rel="noopener">
+      &#128279; General ROADMAP &mdash; Toate sprinturile
+    </a>
+    <a class="roadmap-link" href="https://github.com/orgs/peviitor-ro/projects/78/views/3" target="_blank" rel="noopener" style="margin-left:0.5rem;">
+      &#128279; Sprint 2 &mdash; Vedere dedicată
+    </a>
+    <p style="margin-top:0.75rem;">ROADMAP-ul centralizează: <strong>task tracking, sprint planning, environment readiness, deploy status, team activity</strong> &mdash; sursa unică de adevăr pentru tot ce se lucrează în platformă.</p>
+  </div>
+
+  <div class="card">
+    <h2>Echipa &mdash; Contribuitori Sprint 2</h2>
+    <p>Următoarele persoane au contribuit la planificarea, execuția și validarea Sprint 2:</p>
+
+    <div class="contributor-card pm">
+      <div class="contributor-avatar">DD</div>
+      <div class="contributor-info">
+        <div class="name">Diana Dragoi</div>
+        <div class="role">Project Manager &amp; Autor Test Plan</div>
+      </div>
+    </div>
+
+    <div class="contributor-card qa">
+      <div class="contributor-avatar">AT</div>
+      <div class="contributor-info">
+        <div class="name">Ana-Maria Talmacel</div>
+        <div class="role">QA Lead &mdash; Coordonare, sign-off, raport final</div>
+      </div>
+    </div>
+
+    <div class="contributor-card qa">
+      <div class="contributor-avatar">CS</div>
+      <div class="contributor-info">
+        <div class="name">Carmen Steliana</div>
+        <div class="role">QA Lead</div>
+      </div>
+    </div>
+
+    <div class="contributor-card po">
+      <div class="contributor-avatar">BS</div>
+      <div class="contributor-info">
+        <div class="name">Boga Sebastian-Nicolae</div>
+        <div class="role">Product Owner &mdash; Approbat Test Strategy</div>
+      </div>
+    </div>
+
+    <div class="contributor-card dev">
+      <div class="contributor-avatar">BS</div>
+      <div class="contributor-info">
+        <div class="name">Boga Sebastian</div>
+        <div class="role">Developer &amp; Git Contributor &mdash; <code>sebitestb@gmail.com</code></div>
+      </div>
+    </div>
+
+    <div class="contributor-card dev">
+      <div class="contributor-avatar">BN</div>
+      <div class="contributor-info">
+        <div class="name">Boga Sebastian Nicolae</div>
+        <div class="role">Developer &amp; Git Contributor &mdash; <code>sebastian.boga@outlook.com</code></div>
+      </div>
+    </div>
+
+    <h3>Echipele de testare</h3>
+    <table>
+      <tr><th>Rol</th><th>Număr</th><th>Responsabilități</th></tr>
+      <tr><td>Manual QA</td><td>5</td><td>Testare funcțională, API, integrare, raportare bug-uri</td></tr>
+      <tr><td>Automation QA</td><td>2</td><td>Playwright E2E, integrare CI/CD, mentenanță scripturi</td></tr>
+      <tr><td>Performance Tester</td><td>1</td><td>Load test, Lighthouse audit, monitorizare SOLR</td></tr>
+      <tr><td>Security Tester</td><td>1</td><td>OWASP Top 10, GitHub Security, input sanitization</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>1. Introducere</h2>
+    <h3>1.1 Scop</h3>
+    <p>Acest document definește planul de testare pentru <strong>Sprint 2</strong> al platformei peviitor.ro. Scopul este validarea funcționalităților dezvoltate în acest sprint, asigurarea calității datelor agregate și confirmarea că platforma rămâne stabilă după modificări.</p>
+    <h3>1.2 Referințe</h3>
+    <table>
+      <tr><th>Document</th><th>Locație</th></tr>
+      <tr><td>Test Strategy</td><td><code>Test_Strategy_Peviitor.ro.md</code></td></tr>
+      <tr><td>Software Architecture Design</td><td><a href="https://sad.peviitor.ro">sad.peviitor.ro</a></td></tr>
+      <tr><td>Infrastructure Design Document</td><td><a href="https://idd.peviitor.ro">idd.peviitor.ro</a></td></tr>
+      <tr><td>ROADMAP (Sprint 2)</td><td><a href="https://github.com/orgs/peviitor-ro/projects/78/views/3">github.com/orgs/peviitor-ro/projects/78/views/3</a></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>2. Domeniu de aplicare</h2>
+    <h3>2.1 Ce se testează</h3>
+    <table>
+      <tr><th>Componentă</th><th>Prioritate</th><th>Aspecte testate</th></tr>
+      <tr><td>Frontend (search-engine)</td><td><span class="badge badge-high">Mare</span></td><td>Funcționalitate căutare, filtre (oraș, companie, mod lucru), paginare, responsivitate mobile/tablet/desktop</td></tr>
+      <tr><td>API (api.peviitor.ro)</td><td><span class="badge badge-high">Mare</span></td><td>Endpoint-urile v0/v1, parametri query, error handling, backward compatibility</td></tr>
+      <tr><td>SOLR Indexare</td><td><span class="badge badge-medium">Medie</span></td><td>Conformitate schemă, căutare diacritice, facet search, CRUD documente</td></tr>
+      <tr><td>Validare Date</td><td><span class="badge badge-medium">Medie</span></td><td>Status flow job-uri, câmpuri obligatorii, duplicate detection</td></tr>
+      <tr><td>Integrare Cross-Component</td><td><span class="badge badge-high">Mare</span></td><td>Frontend &#8596; API, API &#8596; SOLR, Scrapers &#8594; SOLR</td></tr>
+      <tr><td>Non-Funcțional</td><td><span class="badge badge-medium">Medie</span></td><td>Performanță (&lt;2s), securitate OWASP, accesibilitate, browser compatibility</td></tr>
+    </table>
+    <h3>2.2 Ce nu se testează</h3>
+    <ul>
+      <li>Scraperele individuale (testate separat de echipele de scraping)</li>
+      <li>Validatorul (<code>admin.peviitor.ro</code>) &mdash; acoperit în document separat</li>
+      <li>Aplicația mobilă (<code>androidAPP</code>) &mdash; document separat</li>
+      <li><code>orase.peviitor.ro</code>, <code>firme.zira.ro</code>, <code>admin.zira.ro</code></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>3. Features / Task-uri de testat</h2>
+    <p>Pe baza <strong>ROADMAP-ului general</strong> și a priorităților Sprint 2, următoarele arii sunt vizate:</p>
+
+    <h3>3.1 Frontend — search-engine</h3>
+    <table>
+      <tr><th>ID</th><th>Feature / Bug</th><th>Repo</th></tr>
+      <tr><td>F-01</td><td>Căutare după cuvânt cheie &mdash; funcționalitate de bază</td><td>search-engine</td></tr>
+      <tr><td>F-02</td><td>Filtrare după oraș &mdash; listă orașe, autocomplete, selecție multiplă</td><td>search-engine</td></tr>
+      <tr><td>F-03</td><td>Filtrare după companie &mdash; listă companii, selecție</td><td>search-engine</td></tr>
+      <tr><td>F-04</td><td>Filtrare după mod lucru (remote, on-site, hybrid)</td><td>search-engine</td></tr>
+      <tr><td>F-05</td><td>Combinare filtre multiple (oraș + companie + mod lucru)</td><td>search-engine</td></tr>
+      <tr><td>F-06</td><td>Paginare &mdash; buton "Încarcă mai multe", scroll infinit</td><td>search-engine</td></tr>
+      <tr><td>F-07</td><td>Responsivitate &mdash; layout pe mobile (&ge;320px), tablet, desktop</td><td>search-engine</td></tr>
+      <tr><td>F-08</td><td>Stări speciale &mdash; "No results", eroare API, loading</td><td>search-engine</td></tr>
+      <tr><td>F-09</td><td>Căutare cu diacritice vs fără diacritice</td><td>search-engine</td></tr>
+      <tr><td>F-10</td><td>Bug: Joburile de pe paginile 2+ nu se încarcă</td><td>search-engine</td></tr>
+    </table>
+
+    <h3>3.2 API — api.peviitor.ro</h3>
+    <table>
+      <tr><th>ID</th><th>Feature / Bug</th><th>Repo</th></tr>
+      <tr><td>A-01</td><td>Endpoint <code>/v1/search/?q=</code> &mdash; parametri valizi, invalizi, edge cases</td><td>api.peviitor.ro</td></tr>
+      <tr><td>A-02</td><td>Endpoint <code>/v1/search/?city=</code> &mdash; filtrare oraș</td><td>api.peviitor.ro</td></tr>
+      <tr><td>A-03</td><td>Endpoint <code>/v1/search/?company=</code> &mdash; filtrare companie</td><td>api.peviitor.ro</td></tr>
+      <tr><td>A-04</td><td>Endpoint <code>/v1/search/?workmode=</code> &mdash; filtrare mod lucru</td><td>api.peviitor.ro</td></tr>
+      <tr><td>A-05</td><td>Endpoint <code>/v1/total/</code> &mdash; număr total joburi</td><td>api.peviitor.ro</td></tr>
+      <tr><td>A-06</td><td>Endpoint <code>/v1/logo/</code> &mdash; logo companii</td><td>api.peviitor.ro</td></tr>
+      <tr><td>A-07</td><td>Error handling &mdash; 400, 404, 500 cu mesaje corespunzătoare</td><td>api.peviitor.ro</td></tr>
+      <tr><td>A-08</td><td>Backward compatibility &mdash; v0 (dev) + v1 (prod)</td><td>api.peviitor.ro</td></tr>
+    </table>
+
+    <h3>3.3 SOLR — peviitor_core</h3>
+    <table>
+      <tr><th>ID</th><th>Feature / Bug</th><th>Repo</th></tr>
+      <tr><td>S-01</td><td>Conformitate schemă &mdash; câmpuri Job Model corect mapate</td><td>peviitor_core</td></tr>
+      <tr><td>S-02</td><td>Căutare full-text &mdash; relevanță, partial match, phrase match</td><td>peviitor_core</td></tr>
+      <tr><td>S-03</td><td>Facet search &mdash; counts corecte per oraș/companie/mod lucru</td><td>peviitor_core</td></tr>
+      <tr><td>S-04</td><td>CRUD &mdash; indexare, update, delete documente</td><td>peviitor_core</td></tr>
+      <tr><td>S-05</td><td>URL validation pipeline &mdash; HEAD requests, 404 deletion</td><td>peviitor_core</td></tr>
+    </table>
+
+    <h3>3.4 Cross-Component</h3>
+    <table>
+      <tr><th>ID</th><th>Feature / Bug</th><th>Componente implicate</th></tr>
+      <tr><td>C-01</td><td>Frontend &#8594; API &#8594; SOLR &mdash; flux complet căutare</td><td>search-engine + api + SOLR</td></tr>
+      <tr><td>C-02</td><td>Filtre &#8594; API &#8594; SOLR &mdash; parametrii corecți transmiși</td><td>search-engine + api + SOLR</td></tr>
+      <tr><td>C-03</td><td>API &#8594; SOLR &mdash; SOLR offline / timeout &#8594; graceful degradation</td><td>api + SOLR</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>4. Abordarea testării</h2>
+
+    <h3>4.1 Niveluri de testare</h3>
+    <table>
+      <tr><th>Nivel</th><th>Tehnică</th><th>Instrumente</th><th>Răspunde</th></tr>
+      <tr><td>Testare Funcțională Manuală</td><td>Exploratorie + test cases</td><td>Chrome DevTools</td><td>Manual QA (5)</td></tr>
+      <tr><td>Testare Automată</td><td>E2E Playwright</td><td>Playwright, GitHub Actions</td><td>Automation QA (2)</td></tr>
+      <tr><td>Testare API</td><td>Manual + Postman</td><td>Postman, Swagger UI</td><td>Manual QA</td></tr>
+      <tr><td>Testare Integrare</td><td>Cross-component flows</td><td>Postman, manual</td><td>Manual QA</td></tr>
+      <tr><td>Testare Regresie</td><td>Checklist critic</td><td>Playwright + manual</td><td>QA Team</td></tr>
+      <tr><td>Testare Non-Funcțională</td><td>Performance + Security</td><td>Lighthouse, JMeter, GitHub Security</td><td>Performance + Security Tester</td></tr>
+    </table>
+
+    <h3>4.2 Medii de testare</h3>
+    <table>
+      <tr><th>Mediu</th><th>URL</th><th>Scop</th></tr>
+      <tr><td>Test</td><td><a href="https://test.peviitor.ro">test.peviitor.ro</a></td><td>Testare funcțională, integrare, regresie</td></tr>
+      <tr><td>API Test</td><td><a href="https://test.peviitor.ro/swagger-ui">test.peviitor.ro/swagger-ui</a></td><td>Validare endpoint-uri</td></tr>
+      <tr><td>SOLR Test</td><td><a href="https://testsolv.peviitor.ro">testsolv.peviitor.ro</a></td><td>Validare indexare, schemă, căutare</td></tr>
+      <tr><td>Local</td><td><code>http://localhost:3000</code></td><td>Debugging izolat</td></tr>
+    </table>
+
+    <h3>4.3 Date de test</h3>
+    <table>
+      <tr><th>Categorie</th><th>Exemple</th></tr>
+      <tr><td>Date valide</td><td>"QA", "Java Developer", "București", "Cluj", "remote"</td></tr>
+      <tr><td>Date invalide</td><td>Companie &lt; 3 chars, oraș inexistent ("Atlantis"), caractere speciale (<code>&lt;script&gt;</code>)</td></tr>
+      <tr><td>Edge cases</td><td>Input &gt; 500 chars, string gol, spații albe, căutare case-insensitive</td></tr>
+      <tr><td>No-result scenarios</td><td>"nuclear physicist", oraș + companie care nu există împreună</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>5. Calendar &amp; Estimări</h2>
+    <table>
+      <tr><th>Activitate</th><th>Perioadă</th><th>Resurse</th></tr>
+      <tr><td>Pregătire medii de test + date</td><td>07 Apr &mdash; 08 Apr</td><td>Ana-Maria Talmacel (QA Lead)</td></tr>
+      <tr><td>Testare funcțională manuală</td><td>09 Apr &mdash; 15 Apr</td><td>5 Manual QA</td></tr>
+      <tr><td>Testare API</td><td>09 Apr &mdash; 14 Apr</td><td>2 Manual QA</td></tr>
+      <tr><td>Testare automată (Playwright)</td><td>09 Apr &mdash; 17 Apr</td><td>2 Automation QA</td></tr>
+      <tr><td>Testare integrare</td><td>14 Apr &mdash; 16 Apr</td><td>3 Manual QA</td></tr>
+      <tr><td>Testare regresie</td><td>17 Apr &mdash; 18 Apr</td><td>QA Team</td></tr>
+      <tr><td>Testare non-funcțională</td><td>14 Apr &mdash; 17 Apr</td><td>Performance + Security Tester</td></tr>
+      <tr><td>Bug fixing &amp; reverificare</td><td>10 Apr &mdash; 19 Apr</td><td>QA Team + Dev</td></tr>
+      <tr><td>Raport final + sign-off</td><td>20 Apr</td><td>Ana-Maria Talmacel (QA Lead)</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>6. Livrabile</h2>
+    <table>
+      <tr><th>Artifact</th><th>Responsabil</th></tr>
+      <tr><td>Test cases (funcționale)</td><td>Manual QA Team</td></tr>
+      <tr><td>Test cases automate (Playwright)</td><td>Automation QA Team</td></tr>
+      <tr><td>Bug reports (GitHub Issues)</td><td>QA Team</td></tr>
+      <tr><td>Test Execution Report Sprint 2</td><td>Ana-Maria Talmacel</td></tr>
+      <tr><td>Release readiness status</td><td>Ana-Maria Talmacel</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>7. Riscuri și mitigare</h2>
+    <table>
+      <tr><th>Risc</th><th>Probabilitate</th><th>Impact</th><th>Mitigare</th></tr>
+      <tr><td>Bug-uri critice descoperite târziu</td><td><span class="risk-medium">Medie</span></td><td><span class="risk-high">Mare</span></td><td>Testare continuă, nu doar la final de sprint</td></tr>
+      <tr><td>Voluntari indisponibili</td><td><span class="risk-medium">Medie</span></td><td><span class="risk-medium">Medie</span></td><td>Cross-training, documentare în GitHub</td></tr>
+      <tr><td>SOLR test environment down</td><td><span class="risk-low">Scăzută</span></td><td><span class="risk-high">Critic</span></td><td>Backup config, documentație restore</td></tr>
+      <tr><td>API rate limiting</td><td><span class="risk-low">Scăzută</span></td><td><span class="risk-high">Major</span></td><td>Monitorizare, respectare politici</td></tr>
+      <tr><td>Schimbări de ultim moment în sprint</td><td><span class="risk-medium">Medie</span></td><td><span class="risk-medium">Medie</span></td><td>Clarificare în Discord, prioritizare</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>8. Criterii de intrare</h2>
+    <ul class="checklist">
+      <li>Code merged pe branch-ul țintă (<code>main</code> / <code>master</code>)</li>
+      <li>Build-ul trece pe GitHub Actions</li>
+      <li>Frontend-ul se build-uieste fără erori (<code>npm run build</code>)</li>
+      <li>API-ul răspunde la smoke test</li>
+      <li>SOLR cores accesibile pe test environment</li>
+      <li>Test environment deployat cu ultimul build</li>
+      <li>Test cases actualizate pentru noile feature-uri</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>9. Criterii de ieșire</h2>
+    <ul class="checklist">
+      <li>Toate bug-urile S1 (Blocker), S2 (Critical), S3 (Major) sunt fixate și verificate</li>
+      <li>Testele de regresie (critical path) trec: 100% pass rate</li>
+      <li>Funcționalitățile noi sunt testate și acceptate de QA</li>
+      <li>Accessibility checks &mdash; zero critical WCAG violations</li>
+      <li>Performance benchmarks în limite (P95 &lt; 2s search)</li>
+      <li>Test Summary Report revizuit și aprobat de QA Lead</li>
+      <li>Sign-off de la QA Lead și Project Lead</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Document creat</h2>
+    <p><strong>Data:</strong> 18 Iunie 2026 &nbsp;|&nbsp; <strong>Status:</strong> Draft &nbsp;|&nbsp; <strong>Următoarea revizuire:</strong> La finalul Sprint 2</p>
+  </div>
+
+  <div class="footer">
+    <strong>peviitor.ro</strong> &mdash; Locul de muncă visat, la un click distanță &nbsp;|&nbsp; Test Plan Sprint 2
+  </div>
+
+</div>
+</body>
+</html>
