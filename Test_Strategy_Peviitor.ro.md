@@ -58,6 +58,7 @@ This document defines the test strategy for the **peviitor.ro** platform — the
 - Mobile application testing (androidAPP) — will be covered in a separate test strategy for mobile testing
 - [orase.peviitor.ro](https://orase.peviitor.ro) — will be covered in a separate test strategy document
 - [firme.zira.ro](https://firme.zira.ro) and [admin.zira.ro](https://admin.zira.ro) — will be covered in a separate test strategy document
+- [splash.peviitor.ro](https://splash.peviitor.ro) — static fallback page hosted on Google Sites, outside the testing scope of the main platform
 
 ### 1.3 General Objectives
 
@@ -197,8 +198,7 @@ This section lists all testing tools used across the project, split by area, so 
 | **Chrome DevTools** | Debugging, performance, network, console | Built into Chrome — `F12` / `Ctrl+Shift+I` |
 | **React DevTools** | React component inspection, state debugging | Chrome extension — [chromewebstore.google.com](https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) |
 | **Sentry** | Error monitoring, crash reporting | [sentry.io](https://sentry.io) — account required |
-| **Jest** | JavaScript unit tests (search-engine) | [jestjs.io](https://jestjs.io/) — `npm install jest` |
-| **Vitest** | JavaScript unit tests (alternative) | [vitest.dev](https://vitest.dev/) — `npm install vitest` |
+| **Vitest** | JavaScript unit tests | [vitest.dev](https://vitest.dev/) — `npm install vitest` |
 | **Playwright** | Automated E2E testing | [playwright.dev](https://playwright.dev/) — `npm init playwright` |
 
 **API Testing**
@@ -206,10 +206,7 @@ This section lists all testing tools used across the project, split by area, so 
 | Tool | What It's Used For | Where to Access |
 |------|-------------------|-----------------|
 | **Postman** | API endpoint testing, collections | [postman.com/downloads](https://www.postman.com/downloads/) — free tier |
-| **Bruno** | API endpoint testing (open source) | [usebruno.com/downloads](https://usebruno.com/downloads) — open source |
-| **REST Client** | Quick API testing in editor | VS Code extension — [marketplace.visualstudio.com](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) |
 | **Apache JMeter** | Functional API testing, parameterized requests, assertions | [jmeter.apache.org](https://jmeter.apache.org/) — free |
-| **PHPUnit** | Automated PHP unit & integration tests | [docs.phpunit.de](https://docs.phpunit.de/) — install via Composer |
 | **Swagger UI** | Interactive API documentation | [test.peviitor.ro/swagger-ui](https://test.peviitor.ro/swagger-ui) — public |
 
 **SOLR Indexing Testing**
@@ -249,9 +246,6 @@ This section lists all testing tools used across the project, split by area, so 
 |------|-------------------|-----------------|
 | **Lighthouse** | Performance & accessibility audits | Built into Chrome DevTools or CLI: `npm install -g lighthouse` |
 | **Apache JMeter** | Performance / load testing, API & SOLR query performance | [jmeter.apache.org](https://jmeter.apache.org/) — free |
-| **k6** | Performance / load testing | [grafana.com/docs/k6](https://grafana.com/docs/k6/) |
-| **OWASP ZAP** | Security testing | [zaproxy.org/download](https://www.zaproxy.org/download/) |
-| **axe DevTools** | WCAG accessibility audit | Chrome extension — [chromewebstore.google.com](https://chromewebstore.google.com/detail/axe-devtools-web-accessib/lhdoppojpmngadmnindnejefpokejbdd) |
 | **WAVE** | Accessibility evaluation | Chrome extension — [chromewebstore.google.com](https://chromewebstore.google.com/detail/wave-evaluation-tool/jbbplnpkjmmeebjpijfedlgcdilocofh) |
 | **GitHub Security Tab** | Secret Scanning, Code Scanning, Dependabot alerts | [github.com/peviitor-ro](https://github.com/peviitor-ro) — Security tab per repo |
 | **BrowserStack** | Cross-browser testing on real devices & browsers | [browserstack.com](https://www.browserstack.com) |
@@ -268,6 +262,9 @@ This section lists all testing tools used across the project, split by area, so 
 | Tool | What It's Used For | Where to Access |
 |------|-------------------|-----------------|
 | **Figma** | UI design review, usability validation, component specs | [figma.com](https://www.figma.com) — [Pe Viitor design](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) |
+| **Canva** | Graphic design for visual assets, social media, presentations | [canva.com](https://www.canva.com) — free tier |
+| **Miro** | Collaborative whiteboard for brainstorming, diagrams, planning | [miro.com](https://www.miro.com) — free tier |
+| **Stitch** | Design system documentation and component management | [stitch.netlify.app](https://stitch.netlify.app) |
 
 **Version Control**
 
@@ -287,6 +284,8 @@ This section lists all testing tools used across the project, split by area, so 
 | Tool | What It's Used For | Where to Access |
 |------|-------------------|-----------------|
 | **Visual Studio Code** | Code editor, testing scripts, REST Client extensions, debugging | [code.visualstudio.com](https://code.visualstudio.com/) — free |
+| **Antigravity** | IDE / development environment | — |
+| **GitHub** | Version control, project management, CI/CD via GitHub Actions | [github.com](https://github.com) — free |
 | **opencode** | AI-powered coding assistant for development & testing tasks | [opencode.ai](https://opencode.ai) — CLI tool |
 
 ### 2.4 TECHNOLOGIES
