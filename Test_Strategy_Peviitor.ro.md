@@ -10,8 +10,9 @@
 | Role | Name | Signature | Date |
 |------|------|-----------|------|
 | **Reviewed By** | | | |
-| Project Manager | Diana Dragoi | ___________________________ | ___/___/2026 |
-| QA Lead | Ana-Maria Talmacel | ___________________________ | ___/___/2026 |
+| Project Manager | Diana Dragoi | ___________________________ | _27__/_06_/2026 |
+| QA Lead | Ana-Maria Talmacel | ___________________________ | 27___/06__/2026 |
+| QA Lead | Ut Carmen Steliana | ___________________________ | _27_/_06__/2026 |
 | **Approved By** | | | |
 | Product Owner | Boga Sebastian-Nicolae | ___________________________ | ___/___/2026 |
 
