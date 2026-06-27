@@ -197,7 +197,6 @@ This section lists all testing tools used across the project, split by area, so 
 |------|-------------------|-----------------|
 | **Manual exploratory testing** | Ad-hoc functional & UI validation | — (tester expertise) |
 | **Chrome DevTools** | Debugging, performance, network, console | Built into Chrome — `F12` / `Ctrl+Shift+I` |
-| **React DevTools** | React component inspection, state debugging | Chrome extension — [chromewebstore.google.com](https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) |
 | **Sentry** | Error monitoring, crash reporting | [sentry.io](https://sentry.io) — account required |
 | **Vitest** | JavaScript unit tests | [vitest.dev](https://vitest.dev/) — `npm install vitest` |
 | **Playwright** | Automated E2E testing | [playwright.dev](https://playwright.dev/) — `npm init playwright` |
@@ -238,7 +237,6 @@ This section lists all testing tools used across the project, split by area, so 
 | Tool | What It's Used For | Where to Access |
 |------|-------------------|-----------------|
 | **GitHub** | Test case writing, bug tracking, project management, CI/CD via GitHub Actions | [github.com/peviitor-ro](https://github.com/peviitor-ro) |
-| **TestLink** | Test case management, test plans, test execution tracking, reports | [testlink.org](https://testlink.org/) — self-hosted or hosted instance |
 | **ROADMAP project** | Sprint planning, task tracking, environment readiness, deploy status, team activity | [github.com/orgs/peviitor-ro/projects/78](https://github.com/orgs/peviitor-ro/projects/78) |
 
 **Non-Functional Testing**
@@ -247,7 +245,6 @@ This section lists all testing tools used across the project, split by area, so 
 |------|-------------------|-----------------|
 | **Lighthouse** | Performance & accessibility audits | Built into Chrome DevTools or CLI: `npm install -g lighthouse` |
 | **Apache JMeter** | Performance / load testing, API & SOLR query performance | [jmeter.apache.org](https://jmeter.apache.org/) — free |
-| **WAVE** | Accessibility evaluation | Chrome extension — [chromewebstore.google.com](https://chromewebstore.google.com/detail/wave-evaluation-tool/jbbplnpkjmmeebjpijfedlgcdilocofh) |
 | **GitHub Security Tab** | Secret Scanning, Code Scanning, Dependabot alerts | [github.com/peviitor-ro](https://github.com/peviitor-ro) — Security tab per repo |
 | **BrowserStack** | Cross-browser testing on real devices & browsers | [browserstack.com](https://www.browserstack.com) |
 | **Chrome DevTools device emulation** | Mobile viewport testing, responsive design checks | Built into Chrome — `F12` / `Ctrl+Shift+I` |
@@ -263,8 +260,6 @@ This section lists all testing tools used across the project, split by area, so 
 | Tool | What It's Used For | Where to Access |
 |------|-------------------|-----------------|
 | **Figma** | UI design review, usability validation, component specs | [figma.com](https://www.figma.com) — [Pe Viitor design](https://www.figma.com/file/SS81SUL5ZnytusulXYwuUG/Pe-Viitor) |
-| **Canva** | Graphic design for visual assets, social media, presentations | [canva.com](https://www.canva.com) — free tier |
-| **Miro** | Collaborative whiteboard for brainstorming, diagrams, planning | [miro.com](https://www.miro.com) — free tier |
 | **Stitch** | Design system documentation and component management | [stitch.netlify.app](https://stitch.netlify.app) |
 
 **Version Control**
@@ -305,7 +300,6 @@ This section describes the key technologies used across the platform, split by c
 | **Radix UI** | Accessible UI primitives (tooltips, dialogs) |
 | **Lucide React** | Icon library |
 | **Sentry React** | Error monitoring and performance tracking |
-| **Microsoft Clarity** | User behavior analytics |
 | **GitHub Pages** | Hosting and delivery of the static frontend |
 
 **API (api.peviitor.ro)**
@@ -361,7 +355,7 @@ This section describes the key technologies used across the platform, split by c
 | Area | Approach |
 |------|----------|
 | **Functional Testing** | Verify search flow: input query → API call → display results; filter by location, company, tags, work mode; pagination; empty states; error states |
-| **UI / Visual Testing** | Layout consistency, responsive design (mobile/tablet/desktop), Tailwind CSS classes, component rendering with React |
+| **UI / Visual Testing** | Layout consistency, responsive design (mobile/tablet/desktop) |
 | **UI / GUI Testing (Figma)** | Validate UI against Figma designs — layout, alignment, colors, fonts, spacing, responsive breakpoints, interactive states (hover, focus, active). Confirm correct rendering in both portrait and landscape orientations. |
 | **Automation Testing** | Automate critical E2E flows with Playwright: job search, filter application, pagination, job detail navigation. Target: 80% critical path coverage. Integrate into GitHub Actions for regression on each release. |
 | **Regression Testing** | Run on each release (~weekly), verify critical paths (search, filter, company page, job detail) |
@@ -495,7 +489,7 @@ The active team is listed at [oportunitatisicariere.ro/echipa.html](https://opor
 
 | Role | Number of Testers | Responsibilities |
 |------|------------------|-----------------|
-| **Manual QA Tester** | 5 | Functional testing, regression testing, exploratory testing, bug reporting, test case creation, cross-browser testing, data validation via admin.peviitor.ro |
+| **Manual QA Tester** | 5 | Functional testing, usability testing, accesibility testing, UI/UX Testing, smoke testing, regression testing, exploratory testing, bug reporting, test case creation, cross-browser testing, data validation via admin.peviitor.ro |
 | **Automation QA Tester** | 2 | Automated E2E tests (Playwright), API test automation (Postman collections), CI/CD integration, test script maintenance, regression automation |
 | **Performance Tester** | 1 | Load testing (k6), SOLR query performance monitoring, API latency measurement, Lighthouse audits, capacity planning |
 | **Security Tester** | 1 | OWASP Top 10 validation, penetration testing (OWASP ZAP), vulnerability assessment, security code review, Dependabot alert triage, secret scanning monitoring |
